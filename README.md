@@ -72,7 +72,6 @@
 
 ### Frontend
 
-```bash
 cd frontend
 npm install
 npm run dev
@@ -80,22 +79,21 @@ npm run dev
 yarn install
 yarn dev
 
-
-Backend
+### Backend
 
 The backend provides the REST API, handles database operations, authentication, and serves the data for the frontend.
 
-```bash
 cd backend
 python -m venv venv
 
 # Activate virtual environment
-source venv/bin/activate       # Linux/macOS
-venv\Scripts\activate          # Windows
+# Linux/macOS
+source venv/bin/activate
+# Windows
+venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Run the development server
 uvicorn app.main:app --reload
-
