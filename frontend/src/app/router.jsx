@@ -17,7 +17,7 @@ function AppRouter() {
       <Route path="/cart" element={<CartPage />} />
       <Route path="/about" element={<AboutUs />} />
       
-      {/* Add more routes here as needed */}
+   
     </Routes>
   );
 }

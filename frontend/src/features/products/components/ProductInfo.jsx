@@ -8,11 +8,11 @@ function ProductInfo({ product }) {
   // Fetch reviews dynamically
   const { reviews, loading } = useReviews(product.id);
 
-  // Calculate sale price if sale exists
+  // Calculte sale price if sale exists
   const hasSale = product.sale && product.sale > 0;
   const salePrice = hasSale ? (product.price * (1 - product.sale)).toFixed(2) : null;
 
-  // Calculate average rating for display
+  // Calculae average rating for display
   const averageRating = reviews.length
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
     : 0;
