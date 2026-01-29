@@ -1,0 +1,55 @@
+
+.card-image {
+  transition: transform 0.3s ease-in-out;
+  border-radius: 12px 12px 0 0; /* Match card rounding */
+}
+
+.card-image:hover {
+  transform: scale(1.05);
+}
+
+/* Reduce card height by controlling cover image */
+.card-cover {
+  height: 180px; /* Shorter height */
+  object-fit: cover;
+}
+
+/* Dark mode tweaks */
+body.dark-mode .ant-card {
+  background-color: #1f1f1f !important;
+  color: #e8e8e8 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+body.dark-mode .ant-tag {
+  background-color: #555 !important;
+  color: #eee !important;
+}
+
+body.dark-mode .ant-typography {
+  color: #e8e8e8 !important;
+}
+
+.ant-card {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.ant-card-hoverable:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Black button styling */
+.ant-btn-black {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.ant-btn-black:hover {
+  background-color: #222;
+}

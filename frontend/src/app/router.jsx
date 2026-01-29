@@ -5,8 +5,8 @@ import { Routes, Route } from "react-router-dom";
 import ProductList from "../features/products/pages/ProductList";
 import ProductDetails from "../features/products/pages/ProductDetails";
 import CartPage from "../features/cart/pages/CartPage";
-import Home from "../pages/Home";
-import AboutUs from "../pages/AboutUs";
+import Home from "../pages/Home/Home";
+import AboutUs from "../pages/AboutUs/AboutUs";
 
 function AppRouter() {
   return (

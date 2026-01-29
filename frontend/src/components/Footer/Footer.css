@@ -1,0 +1,13 @@
+/* Footer.css */
+
+.footer-item {
+  @apply text-gray-200 hover:text-brandRed transition-colors cursor-pointer;
+}
+
+.footer-link {
+  @apply text-gray-200 hover:text-brandRed transition-colors cursor-pointer;
+}
+
+.footer-title {
+  @apply text-gray-200 text-base font-bold tracking-wide mb-3;
+}
