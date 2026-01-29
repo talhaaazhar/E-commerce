@@ -10,11 +10,11 @@ function ProductList() {
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get("search")?.toLowerCase() || "";
 
-  // Filter products based on search query
+
   const filteredProducts = MOCK_PRODUCTS.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm) ||
-    product.description.toLowerCase().includes(searchTerm)
-  );
+  (product.name?.toLowerCase().includes(searchTerm)) ||
+  (product.description?.toLowerCase().includes(searchTerm))
+);
 
   return (
     <section className="space-y-6 dark:bg-gray-900 dark:text-gray-100 p-6">
@@ -27,7 +27,7 @@ function ProductList() {
         </p>
       </div>
 
-      <ProductGrid products={MOCK_PRODUCTS} />
+      <ProductGrid products={filteredProducts} />
     </section>
   );
 }
