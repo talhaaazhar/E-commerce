@@ -10,7 +10,7 @@ const MOCK_PRODUCTS = [
       price: 129.99,
       sale:0.2,
       images: [productImage, sofaimage, knob],
-     description:
+      description:
         "A sleek and modern chair designed for comfort and style, perfect for living rooms or office spaces.",
     },
     {

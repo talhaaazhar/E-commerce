@@ -1,0 +1,102 @@
+/* Root colors for dark/light mode */
+:root {
+  --light-bg: #f9f9f9;
+  --light-text: #1f1f1f;
+  --light-card: #ffffff;
+  --dark-bg: #121212;
+  --dark-text: #e8e8e8;
+  --dark-card: #1f1f1f;
+  --divider-color: #ccc;
+}
+
+.about-layout {
+  min-height: 100vh;
+  background-color: var(--light-bg);
+  transition: background-color 0.3s ease;
+}
+
+.about-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 50px 20px;
+  color: var(--light-text);
+}
+
+/* Dark mode using body class */
+body.dark-mode .about-layout {
+  background-color: var(--dark-bg);
+}
+
+body.dark-mode .about-content {
+  color: var(--dark-text);
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-title {
+  font-weight: bold;
+}
+
+.about-divider {
+  border-color: var(--divider-color);
+}
+
+.about-paragraph {
+  font-size: 16px;
+  line-height: 1.8;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.value-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: var(--light-card);
+}
+
+body.dark-mode .value-card {
+  background-color: var(--dark-card);
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+}
+
+.value-icon {
+  font-size: 36px;
+}
+
+.value-title {
+  margin-top: 16px;
+}
+
+.value-desc {
+  font-size: 14px;
+  color: #666;
+}
+
+body.dark-mode .value-desc {
+  color: #aaa;
+}
+
+.about-team {
+  margin-top: 60px;
+}
+
+.about-footer {
+  text-align: center;
+  margin-top: 80px;
+  color: #888;
+}
+
+body.dark-mode .about-footer {
+  color: #aaa;
+}
