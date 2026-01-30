@@ -1,20 +1,58 @@
 import React from "react";
+import { Card, Button, Divider, Typography, Space } from "antd";
+import { ShoppingCartOutlined, LockOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import "./CartSummary.css";
 
-function CartSummary({  totalPrice }){
+const { Title, Text } = Typography;
 
-    return (
-        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow">
-            <h2 className="font-bold text-xl mb-4">Cart Summary</h2>
-             
-            <p className="text-lg font-semibold">
-                Total: ${totalPrice.toFixed(2)}
-            </p>
+function CartSummary({ totalPrice = 0 }) {
+  const navigate = useNavigate();
+  const safeTotal = Number(totalPrice || 0);
 
-            <button className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">
-                Checkout
-            </button>
-        
+  return (
+    <Card
+      className="cart-summary"
+      title={
+        <Space size="small">
+          <ShoppingCartOutlined />
+          <span>Cart Summary</span>
+        </Space>
+      }
+    >
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <Divider className="cart-summary-divider" />
+
+        <div className="cart-summary-container">
+          <Text strong>Total Price</Text>
+          <Title level={4} className="cart-summary-total">
+            ${safeTotal.toFixed(2)}
+          </Title>
         </div>
-    );
+
+        <Button
+          type="primary"
+          block
+          size="large"
+          icon={<LockOutlined />}
+          className="btn-checkout"
+          disabled={safeTotal === 0}
+          onClick={() => alert("Checkout functionality coming soon!")}
+        >
+          Proceed to Checkout
+        </Button>
+
+        <Button
+          type="default"
+          block
+          size="large"
+          onClick={() => navigate("/products")}
+        >
+          Continue Shopping
+        </Button>
+      </Space>
+    </Card>
+  );
 }
+
 export default CartSummary;

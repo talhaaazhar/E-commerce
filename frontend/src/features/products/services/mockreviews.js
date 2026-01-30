@@ -29,7 +29,7 @@ export const MOCK_REVIEWS = [
     productId: 2,
     user: "talha azhar",
     rating: 5,
-    comment: "Good, but could be better.",
+    comment: "Good, but it could be better .",
     date: "2026-01-10"
   }
 ];
