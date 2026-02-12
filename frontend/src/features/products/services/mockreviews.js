@@ -29,7 +29,23 @@ export const MOCK_REVIEWS = [
     productId: 2,
     user: "talha azhar",
     rating: 5,
-    comment: "Good, but could be better.",
+    comment: "Good, but it could be better .",
+    date: "2026-01-10"
+  },
+    {
+    id: 5,
+    productId: 3,
+    user: "Shariq Bhai",
+    rating: 5,
+    comment: "Use AntD for better UI components and avoid raw html.",
+    date: "2026-01-10"
+  },
+     {
+    id: 6,
+    productId: 4,
+    user: "Ahamd khan",
+    rating: 5,
+    comment: "nice product",
     date: "2026-01-10"
   }
 ];

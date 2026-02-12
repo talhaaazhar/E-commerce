@@ -1,0 +1,26 @@
+/* Cards hover effect */
+.category-card,
+.product-card,
+.highlight-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover,
+.product-card:hover,
+.highlight-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Dark mode fixes */
+.dark .ant-btn-primary {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+.dark .ant-btn-primary:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* Carousel image overlay handled by Tailwind classes */

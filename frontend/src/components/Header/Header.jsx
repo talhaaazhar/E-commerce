@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
+import { useLocation } from "react-router-dom"; 
 import { ShoppingCartIcon, MagnifyingGlassIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link , useNavigate} from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,17 +8,40 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  
-  const handleSearch = (e) => { 
-    e.preventDefault(); 
+  const location = useLocation();
 
-    if (searchTerm.trim()!=="") {
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const search = queryParams.get("search") || "";
+    setSearchTerm(search);
+  }, [location.search]);
+
+
+  // const handleSearch = (e) => { 
+  //   e.preventDefault(); 
+
+  //   if (searchTerm.trim()!=="") {
+  //     navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+  //   }
+  //   else {
+  //     navigate(`/products`);  
+  //   }
+  // };
+
+  useEffect(() => {
+  const handler = setTimeout(() => {
+    if (searchTerm.trim() !== "") {
       navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+    } else {
+      navigate("/products");
     }
-  };
+  }, 200); 
+
+  return () => clearTimeout(handler); // cleanup previous timeout
+}, [searchTerm]);
 
 
-  // Get cart from Redux
+  // Geting cart from Redux
   const cart = useSelector((state) => state.cart.items);
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -38,7 +62,7 @@ const Header = () => {
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(e); }}
+                // onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(e); }}
                 className="w-full pl-10 pr-4 py-2 bg-gray-800 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-white-300"
               />
               <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
