@@ -18,6 +18,14 @@ backend/**/*.pyd
 # Virtual environments
 backend/venv/
 backend/.venv/
+backend/env/
+
+
+backend/.env
+backend/FirstAdmin.py
+
+
+backend/alembic.ini
 
 # Python tooling
 backend/.pytest_cache/
