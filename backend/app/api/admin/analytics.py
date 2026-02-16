@@ -77,3 +77,26 @@ def revenue_by_product(
         start_date=start_date,
         end_date=end_date,
     )
+
+
+
+@router.get(
+    "/revenue-by-product",
+    response_model=List[RevenueByProductRead]
+)
+def revenue_by_product(
+    product_id: int | None = None,
+    product_name: str | None = Query(None, min_length=2),
+    category: str | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
+    db: Session = Depends(get_db)
+):
+    return revenue_by_product_service(
+        db=db,
+        product_id=product_id,
+        product_name=product_name,
+        category=category,
+        start_date=start_date,
+        end_date=end_date,
+    )

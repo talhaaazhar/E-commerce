@@ -24,10 +24,6 @@ router = APIRouter(
 
 
 
-
-
-
-
 def serialize_cart(db, cart) -> CartRead:
     items = []
     total_price = Decimal("0.00")
@@ -61,32 +57,6 @@ def serialize_cart(db, cart) -> CartRead:
 
 
 
-# def serialize_cart(cart) -> CartRead:
-#     items = []
-#     total_price = Decimal("0.00")
-#     total_items = 0
-
-#     for item in cart.items:
-#         subtotal = item.product.price * item.quantity
-#         total_price += subtotal
-#         total_items += item.quantity
-
-#         items.append({
-#             "product_id": item.product.id,
-#             "name": item.product.name,
-#             "price": item.product.price,
-#             "quantity": item.quantity,
-#             "subtotal": subtotal
-#         })
-
-#     return CartRead(
-#         id=cart.id,
-#         items=items,
-#         total_items=total_items,
-#         total_price=total_price
-#     )
-
-
 @router.get("/", response_model=CartRead)
 def get_cart(
     db: Session = Depends(get_db),
@@ -94,6 +64,8 @@ def get_cart(
 ):
     cart = get_cart_service(db, current_user.id)
     return serialize_cart(db, cart)
+
+
 
 
 @router.post("/items", response_model=CartRead)
@@ -110,6 +82,9 @@ def add_item_to_cart(
     )
     return serialize_cart(db,cart)
 
+
+
+
 @router.put("/items/{product_id}", response_model=CartRead)
 def update_cart_item(
     product_id: int,
@@ -124,6 +99,10 @@ def update_cart_item(
         data.quantity
     )
     return serialize_cart(db, cart)
+
+
+
+
 
 @router.delete("/items/{product_id}", response_model=CartRead)
 def remove_cart_item(

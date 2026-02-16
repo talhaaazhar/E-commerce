@@ -9,6 +9,9 @@ from app.api.customer import order as customer_order
 from app.api.admin import order as admin_order
 from app.api.admin import discount as admin_discount
 from app.api.admin import analytics as admin_analytics
+from app.api.customer import reviews as customer_reviews
+from app.api.customer import like as customer_like
+from app.api.customer import profile as customer_profile
 app = FastAPI()
 
 # --------------------- CORS ---------------------
@@ -36,3 +39,6 @@ app.include_router(customer_order.router)
 app.include_router(admin_order.router)
 app.include_router(admin_discount.router)
 app.include_router(admin_analytics.router)
+app.include_router(customer_reviews.router) 
+app.include_router(customer_like.router)
+app.include_router(customer_profile.router)

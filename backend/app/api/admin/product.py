@@ -127,3 +127,4 @@ def list_products_user(
     filters.is_active = True
     products = list_products_service(db=db, filters=filters)
     return _to_product_card_reads(db, products)
+

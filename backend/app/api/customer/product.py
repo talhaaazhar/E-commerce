@@ -15,14 +15,6 @@ router = APIRouter(
 )
 
 
-
-router = APIRouter(
-    prefix="/user/products",
-    tags=["User Products"],
-    # dependencies=[Depends(require_user)]
-)
-
-
 # @router.get("/", response_model=List[ProductCardRead])
 # def list_products_user(
 #     filters: ProductFilter = Depends(),
