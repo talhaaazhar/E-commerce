@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-
-from app.models import UserAddress
+from app.core.security import verify_password, hash_password
+from app.models import User, UserAddress
 
 
 # =========================
@@ -78,3 +78,18 @@ def delete_user_address(db: Session, user_id: int, address_id: int):
 
     db.delete(address)
     db.commit()
+
+
+def change_user_password(db: Session, user_id: int, old_password: str, new_password: str):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return None, "User not found"
+
+    # verify old password
+    if not verify_password(old_password, user.password):
+        return None, "Old password is incorrect"
+
+    user.password = hash_password(new_password)
+    db.commit()
+    db.refresh(user)
+    return user, None

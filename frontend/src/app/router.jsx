@@ -43,6 +43,7 @@ import Home from "../pages/Home/Home";
 import AboutUs from "../pages/AboutUs/AboutUs";
 import Login from "../features/auth/pages/Login";
 import Register from "../features/auth/pages/Register";
+import SettingsPage from "../features/profile/pages/SettingsPage";  
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -77,6 +78,14 @@ function AppRouter() {
         element={
           <ProtectedRoute>
             <CartPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         }
       />

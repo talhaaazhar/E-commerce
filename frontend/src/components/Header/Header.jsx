@@ -118,10 +118,13 @@ const Header = () => {
                 >
                   Logout
                 </button>
-                <span className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-gray-200 rounded-lg text-sm">
+                <Link
+                  to="/settings"
+                  className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-gray-200 rounded-lg text-sm hover:bg-gray-700 transition-colors"
+                >
                   <Cog6ToothIcon className="h-4 w-4 text-gray-300" />
                   {displayName || "Profile"}
-                </span>
+                </Link>
               </>
             ) : (
               <Link
@@ -156,10 +159,13 @@ const Header = () => {
                   >
                     Logout
                   </button>
-                  <div className="w-full px-4 py-3 bg-gray-700 text-gray-200 rounded-lg text-center mt-2 flex items-center justify-center gap-2">
+                  <Link
+                    to="/settings"
+                    className="w-full px-4 py-3 bg-gray-700 text-gray-200 rounded-lg text-center mt-2 flex items-center justify-center gap-2 hover:bg-gray-600 transition-colors"
+                  >
                     <Cog6ToothIcon className="h-4 w-4 text-gray-300" />
                     {displayName || "Profile"}
-                  </div>
+                  </Link>
                 </>
               ) : (
                 <Link
