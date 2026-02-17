@@ -104,8 +104,8 @@ const ProductFilters = ({ onFilterChange }) => {
           <Select
             style={{ width: "100%" }}
             placeholder="Any"
-            value={filters.minRating || undefined}
-            onChange={(value) => handleChange("minRating", value || "")}
+            value={filters.min_rating || undefined}
+            onChange={(value) => handleChange("min_rating", value || "")}
             options={[
               { label: "Any", value: "" },
               { label: "1 star & up", value: "1" },
@@ -119,8 +119,8 @@ const ProductFilters = ({ onFilterChange }) => {
 
         {/* On Sale Checkbox */}
         <Checkbox
-          checked={filters.onSale}
-          onChange={(e) => handleChange("onSale", e.target.checked)}
+          checked={filters.on_sale}
+          onChange={(e) => handleChange("on_sale", e.target.checked)}
           className="text-gray-700 dark:text-gray-300"
         >
           On Sale Only

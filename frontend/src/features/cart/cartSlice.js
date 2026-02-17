@@ -97,3 +97,5 @@ export const selectCartCount = (state) => state.cart.totalItems;
 export const selectCartStatus = (state) => state.cart.status;
 
 export default cartSlice.reducer;
+
+
