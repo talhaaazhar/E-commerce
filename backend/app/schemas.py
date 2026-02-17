@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field, condecimal
+from pydantic import BaseModel, EmailStr, Field, condecimal, conint
 from datetime import datetime
-from typing import Optional, List 
+from typing import Annotated, Optional, List 
 from decimal import Decimal
 from enum import Enum
 from datetime import date
@@ -24,6 +24,45 @@ class UserRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+
+
+class AddressBase(BaseModel):
+    label: Optional[str] = None
+    address_line1: str
+    address_line2: Optional[str] = None
+    city: str
+    state: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: str
+    is_default: bool = False
+
+
+class AddressCreate(AddressBase):
+    pass
+
+
+class AddressUpdate(BaseModel):
+    label: Optional[str] = None
+    address_line1: Optional[str] = None
+    address_line2: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+    is_default: Optional[bool] = None
+
+
+class AddressResponse(AddressBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
 
 
 # ------------------- PRODUCT -------------------
@@ -236,3 +275,41 @@ class RevenueByProductRead(BaseModel):
     category: str | None
     total_quantity: int
     revenue: Decimal
+
+
+##### review schemas
+Rating = Annotated[float, Field(ge=1, le=5, description="Rating must be between 1 and 5")]
+
+class ReviewCreate(BaseModel):
+    product_id: int
+    rating: Rating
+    comment: Optional[str] = None
+
+
+class ReviewUpdate(BaseModel):
+    rating: Optional[Rating] = None
+    comment: Optional[str] = None
+
+class ReviewRead(BaseModel):
+    id: int
+    product_id: int
+    user_id: int
+    rating: float
+    review: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+### product like schemas
+class LikeCreate(BaseModel):
+    product_id: int
+
+class LikeRead(BaseModel):
+    id: int
+    product_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

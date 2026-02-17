@@ -286,3 +286,21 @@ class CartItem(Base):
 
     cart = relationship("Cart", back_populates="items")
     product = relationship("Product")
+
+
+### 
+
+class ProductLike(Base):
+    __tablename__ = "product_likes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "product_id", name="uq_user_product_like"),
+    )
+
+    user = relationship("User")
+    product = relationship("Product")

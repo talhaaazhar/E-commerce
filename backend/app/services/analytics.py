@@ -166,7 +166,10 @@ def revenue_by_product_service(
         query = query.filter(Product.name.ilike(f"%{product_name}%"))
 
     if category:
-        query = query.filter(Product.category == category)
+        query = query.filter(
+            func.lower(Product.category) == category.lower()
+        )
+
 
     # Date filtering
     if start_date:
@@ -182,3 +185,5 @@ def revenue_by_product_service(
     query = query.group_by(Product.id, Product.name, Product.category)
 
     return query.all()
+
+
