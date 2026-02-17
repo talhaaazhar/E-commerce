@@ -1,12 +1,22 @@
-import { Button, Form, Input, Typography } from "antd";
-import { Link } from "react-router-dom";
+import { Button, Form, Input, Typography, message } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
+import { useAuth } from "../hooks/authHook";
 
 const { Text } = Typography;
 
 const Register = () => {
-  const onFinish = (values) => {
-    console.log("Register Data:", values);
+  const { register, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      await register(values); // values now include phone
+      message.success("Account created successfully");
+      navigate("/");
+    } catch {
+      // error handled in hook
+    }
   };
 
   return (
@@ -29,6 +39,17 @@ const Register = () => {
         </Form.Item>
 
         <Form.Item
+          label="Phone"
+          name="phone"
+          rules={[
+            { required: true, message: "Phone number is required" },
+            { min: 8, message: "Invalid phone number" },
+          ]}
+        >
+          <Input placeholder="Your phone number" />
+        </Form.Item>
+
+        <Form.Item
           label="Password"
           name="password"
           rules={[{ required: true, min: 6 }]}
@@ -36,7 +57,12 @@ const Register = () => {
           <Input.Password placeholder="Create password" />
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" block>
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          loading={loading}
+        >
           Register
         </Button>
 

@@ -21,7 +21,7 @@ from app.services.discount import (
 router = APIRouter(
     prefix="/admin/discounts",
     tags=["Admin Discounts"],
-    # dependencies=[Depends(require_admin)]
+    dependencies=[Depends(require_admin)]
 )
 
 @router.post("/", response_model=DiscountRead)

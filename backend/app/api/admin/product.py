@@ -25,7 +25,7 @@ from app.dependencies import require_admin
 router = APIRouter(
     prefix="/admin/products",
     tags=["Admin Products"],
-    # dependencies=[Depends(require_admin)]
+    dependencies=[Depends(require_admin)]
 )
 
 @router.post("/", response_model=ProductRead, status_code=status.HTTP_201_CREATED)
