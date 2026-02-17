@@ -94,10 +94,11 @@ function ProductCard({ product }) {
     description,
     sale = 0,
     tags = [{ label: "New", color: "green" }],
+    reviews: productReviews = null, // Get reviews from product if available
   } = product;
 
-  // Fetch reviews for this product
-  const { reviews } = useReviews(id);
+  // Fetch reviews for this product (or use provided reviews)
+  const { reviews } = useReviews(id, productReviews);
 
   // Get dynamic values from services
   const salePrice = getSalePrice(product);
@@ -116,14 +117,14 @@ function ProductCard({ product }) {
       style={{ display: salePrice ? "block" : "none" }}
     >
       <div className="product-card">
-        <div className="product-image relative">
+        <div className="product-image relative overflow-visible">
           <img
             src={mainImage}
             alt={name}
             className="w-full h-48 object-cover rounded-t-xl"
           />
-          <Tag className="category-tag">{category}</Tag>
-          <div className="extra-tags">
+          <Tag className="category-tag absolute top-2 left-2 z-10">{category}</Tag>
+          <div className="extra-tags absolute top-2 right-2 z-10">
             {tags.map((tag, idx) => (
               <Tag key={idx} color={tag.color || "blue"}>
                 {tag.label}
@@ -143,11 +144,11 @@ function ProductCard({ product }) {
           <div className="flex justify-between items-center">
             <div>
               <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                ${salePrice ?? price.toFixed(2)}
+                ${salePrice ? Number(salePrice).toFixed(2) : Number(price).toFixed(2)}
               </span>
               {salePrice && (
                 <span className="text-sm text-gray-500 line-through ml-2">
-                  ${price.toFixed(2)}
+                  ${Number(price).toFixed(2)}
                 </span>
               )}
             </div>

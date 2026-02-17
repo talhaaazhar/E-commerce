@@ -12,11 +12,19 @@ function AddToCartButton({ product }) {
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ product, quantity }));
-    toast.success(`${product.name} added to cart!`, {
-      position: "top-right",
-      autoClose: 2000,
-    });
+    dispatch(addToCart({ productId: product.id, quantity }))
+      .then(() => {
+        toast.success(`${product.name} added to cart!`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
+      .catch((error) => {
+        toast.error(error?.payload?.detail || "Failed to add item to cart", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      });
   };
 
   return (

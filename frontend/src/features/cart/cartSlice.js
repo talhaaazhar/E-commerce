@@ -1,55 +1,99 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  getCart,
+  addItemToCart,
+  updateCartItem,
+  removeItemFromCart,
+} from "./services/cartService";
 
-const initialState = {
-  items: JSON.parse(localStorage.getItem("cart")) || []
-};
+/* ------------------ THUNKS ------------------ */
 
-const saveCart = (items) => {
-  localStorage.setItem("cart", JSON.stringify(items));
-};
-
-export const cartSlice = createSlice({
-  name: "cart",
-  initialState,
-  reducers: {
-    addToCart: (state, action) => {
-      const product = action.payload.product;
-      const quantity = action.payload.quantity || 1;
-      const existing = state.items.find((item) => item.productId === product.id);
-
-      if (existing) {
-        existing.quantity += quantity;
-      } else {
-        state.items.push({ ...product, productId: product.id, quantity });
-      }
-      saveCart(state.items);
-    },
-    removeFromCart: (state, action) => {
-      state.items = state.items.filter(item => item.productId !== action.payload);
-      saveCart(state.items);
-    },
-    updateQuantity: (state, action) => {
-      const { productId, quantity } = action.payload;
-      const item = state.items.find(i => i.productId === productId);
-      if (item) item.quantity = quantity;
-      saveCart(state.items);
-    },
-    clearCart: (state) => {
-      state.items = [];
-      saveCart(state.items);
-    }
+export const fetchCart = createAsyncThunk(
+  "cart/fetchCart",
+  async () => {
+    return await getCart();
   }
+);
+
+export const addToCart = createAsyncThunk(
+  "cart/addToCart",
+  async ({ productId, quantity }) => {
+    return await addItemToCart(productId, quantity);
+  }
+);
+
+export const updateQuantity = createAsyncThunk(
+  "cart/updateQuantity",
+  async ({ productId, quantity }) => {
+    return await updateCartItem(productId, quantity);
+  }
+);
+
+export const removeFromCart = createAsyncThunk(
+  "cart/removeFromCart",
+  async (productId) => {
+    return await removeItemFromCart(productId);
+  }
+);
+
+/* ------------------ SLICE ------------------ */
+
+const cartSlice = createSlice({
+  name: "cart",
+  initialState: {
+    items: [],
+    totalItems: 0,
+    totalPrice: 0,
+    status: "idle",
+    error: null,
+  },
+  reducers: {
+    clearCartState: (state) => {
+      state.items = [];
+      state.totalItems = 0;
+      state.totalPrice = 0;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCart.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = action.payload.items;
+        state.totalItems = action.payload.total_items;
+        state.totalPrice = action.payload.total_price;
+      })
+      .addCase(addToCart.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.totalItems = action.payload.total_items;
+        state.totalPrice = action.payload.total_price;
+      })
+      .addCase(updateQuantity.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.totalItems = action.payload.total_items;
+        state.totalPrice = action.payload.total_price;
+      })
+      .addCase(removeFromCart.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+        state.totalItems = action.payload.total_items;
+        state.totalPrice = action.payload.total_price;
+      })
+      .addCase(fetchCart.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      });
+  },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
+export const { clearCartState } = cartSlice.actions;
 
-export const selectCart = state => state.cart.items;
+/* ------------------ SELECTORS ------------------ */
 
-export const selectCartCount = state => state.cart.items.reduce((total, item) => total + item.quantity, 0);
-
-export const selectCartTotal = state => state.cart.items.reduce((total, item) => {
-  const priceAfterSale = item.sale ? item.price * (1 - item.sale) : item.price;
-  return total + priceAfterSale * item.quantity;
-}, 0);
+export const selectCartItems = (state) => state.cart.items;
+export const selectCartTotal = (state) => state.cart.totalPrice;
+export const selectCartCount = (state) => state.cart.totalItems;
+export const selectCartStatus = (state) => state.cart.status;
 
 export default cartSlice.reducer;

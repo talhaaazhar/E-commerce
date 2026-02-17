@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -56,7 +56,7 @@ class LoginRequest(BaseModel):
 
 @auth_router.post("/login")
 def login(
-    credentials: Annotated[LoginRequest, Body(...)],
+    credentials: LoginRequest,
     db: Session = Depends(get_db)
 ):
     logger.info(f"Login attempt: email={credentials.email}")
@@ -84,11 +84,31 @@ def login(
     }
 
 
+# --------------------- TOKEN (FOR FASTAPI DOCS AUTHORIZE) ---------------------
+@auth_router.post("/token")
+def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db)
+):
+    """OAuth2 compatible token endpoint for FastAPI docs Authorize button"""
+    user = db.query(User).filter(User.email == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    token_data = {"sub": user.email, "role": user.role.value}
+    access_token = create_access_token(token_data)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 # --------------------- CURRENT USER ---------------------
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 def get_current_user(

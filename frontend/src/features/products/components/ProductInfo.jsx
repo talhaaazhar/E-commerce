@@ -98,9 +98,14 @@ import { useReviews } from "../hooks/useReviews";
 import { Tag, Tooltip, Rate, Button, Typography, Divider, Space } from "antd";
 import { getSalePrice } from "../services/priceService";
 import { getAverageRating } from "../services/reviewService";
+
 const { Title, Paragraph, Text } = Typography;
 
 function ProductInfo({ product }) {
+  if (!product) {
+    return <div className="text-red-500">Product data not available</div>;
+  }
+
   const { reviews } = useReviews(product.id);
 
   const hasSale = product.sale && product.sale > 0;
@@ -124,12 +129,12 @@ function ProductInfo({ product }) {
           {/* Price & Sale */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <Text className="text-3xl font-bold text-green-600 dark:text-green-400">
-              ${hasSale ? salePrice : product.price.toFixed(2)}
+              ${hasSale ? Number(salePrice).toFixed(2) : Number(product.price).toFixed(2)}
             </Text>
             {hasSale && (
               <>
                 <Text delete className="text-gray-400">
-                  ${product.price.toFixed(2)}
+                  ${Number(product.price).toFixed(2)}
                 </Text>
                 <Tag color="red">
                   Save {Math.round(product.sale * 100)}%
@@ -156,9 +161,9 @@ function ProductInfo({ product }) {
       <div>
         <Title level={3}>Description</Title>
         <Paragraph className="text-gray-700 dark:text-gray-300 leading-relaxed">
-          {showFullDesc ? product.description : `${product.description.slice(0, 200)}...`}
+          {showFullDesc ? product.description : `${product.description?.slice(0, 200) || "No description"}...`}
         </Paragraph>
-        {product.description.length > 200 && (
+        {product.description && product.description.length > 200 && (
           <Button type="link" onClick={() => setShowFullDesc(!showFullDesc)} className="p-0">
             {showFullDesc ? "Show Less" : "Read More"}
           </Button>
