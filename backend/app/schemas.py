@@ -30,6 +30,9 @@ class UserProfileUpdate(BaseModel):
     name: Optional[str] = None
     phone: Optional[str] = None
 
+class PasswordChangeRequest(BaseModel):
+    old_password: str = Field(min_length=6)
+    new_password: str = Field(min_length=6)
 
 class AddressBase(BaseModel):
     label: Optional[str] = None

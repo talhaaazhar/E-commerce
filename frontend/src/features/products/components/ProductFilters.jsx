@@ -5,12 +5,12 @@ import { FilterOutlined } from "@ant-design/icons";
 const ProductFilters = ({ onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
-    name: "",
+    search: "",
     category: "",
-    minRating: "",
-    minPrice: "",
-    maxPrice: "",
-    onSale: false,
+    min_rating: "",
+    min_price: "",
+    max_price: "",
+    on_sale: false,
   });
 
   const handleChange = (key, value) => {
@@ -24,12 +24,12 @@ const ProductFilters = ({ onFilterChange }) => {
 
   const handleReset = () => {
     const resetFilters = {
-      name: "",
+      search: "",
       category: "",
-      minRating: "",
-      minPrice: "",
-      maxPrice: "",
-      onSale: false,
+      min_rating: "",
+      min_price: "",
+      max_price: "",
+      on_sale: false,
     };
     setFilters(resetFilters);
     onFilterChange(resetFilters);
@@ -40,15 +40,15 @@ const ProductFilters = ({ onFilterChange }) => {
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Filters</h3>
 
-        {/* Product Name */}
+        {/* Product Name/Search */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            Product Name
+            Search
           </label>
           <Input
             placeholder="Search by name..."
-            value={filters.name}
-            onChange={(e) => handleChange("name", e.target.value)}
+            value={filters.search}
+            onChange={(e) => handleChange("search", e.target.value)}
             className="rounded-md"
           />
         </div>
@@ -82,15 +82,15 @@ const ProductFilters = ({ onFilterChange }) => {
             <Input
               type="number"
               placeholder="Min"
-              value={filters.minPrice}
-              onChange={(e) => handleChange("minPrice", e.target.value)}
+              value={filters.min_price}
+              onChange={(e) => handleChange("min_price", e.target.value)}
               className="flex-1 rounded-md"
             />
             <Input
               type="number"
               placeholder="Max"
-              value={filters.maxPrice}
-              onChange={(e) => handleChange("maxPrice", e.target.value)}
+              value={filters.max_price}
+              onChange={(e) => handleChange("max_price", e.target.value)}
               className="flex-1 rounded-md"
             />
           </div>
@@ -104,8 +104,8 @@ const ProductFilters = ({ onFilterChange }) => {
           <Select
             style={{ width: "100%" }}
             placeholder="Any"
-            value={filters.minRating || undefined}
-            onChange={(value) => handleChange("minRating", value || "")}
+            value={filters.min_rating || undefined}
+            onChange={(value) => handleChange("min_rating", value || "")}
             options={[
               { label: "Any", value: "" },
               { label: "1 star & up", value: "1" },
@@ -119,8 +119,8 @@ const ProductFilters = ({ onFilterChange }) => {
 
         {/* On Sale Checkbox */}
         <Checkbox
-          checked={filters.onSale}
-          onChange={(e) => handleChange("onSale", e.target.checked)}
+          checked={filters.on_sale}
+          onChange={(e) => handleChange("on_sale", e.target.checked)}
           className="text-gray-700 dark:text-gray-300"
         >
           On Sale Only

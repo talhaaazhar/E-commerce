@@ -1,69 +1,38 @@
-import React from "react";
-import ProductGrid from "../components/ProductGrid";
-import { MOCK_PRODUCTS } from "../services/mockProducts.jsx";
-import ProductFilters from "../components/ProductFilters.jsx";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import ProductGrid from "../components/ProductGrid";
+import ProductFilters from "../components/ProductFilters.jsx";
+import { useProducts } from "../hooks/useProducts";
+import { Spin, Empty, Typography } from "antd";
+
+const { Text } = Typography;
 
 function ProductList() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const searchTermFromURL = queryParams.get("search")?.toLowerCase() || "";
+  const searchTermFromURL = queryParams.get("search") || "";
 
-  const [searchTerm, setSearchTerm] = useState(searchTermFromURL);
   const [filters, setFilters] = useState({
+    search: searchTermFromURL,
     category: "",
-    minPrice: "",
-    maxPrice: "",
-    minRating: "",
-    onSale: false,
+    min_price: "",
+    max_price: "",
+    min_rating: "",
+    on_sale: false,
+    skip: 0,
+    limit: 20,
   });
 
-  // by this we will keep term sinkw ith url
+  const { products, loading, error } = useProducts(filters);
+
+  // Keep search term synced with URL
   useEffect(() => {
-    setSearchTerm(searchTermFromURL);
+    setFilters((prev) => ({ ...prev, search: searchTermFromURL }));
   }, [searchTermFromURL]);
-
-  const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-    const name = product.name?.toLowerCase() || "";
-    const description = product.description?.toLowerCase() || "";
-    const category = product.category?.toLowerCase() || "";
-    const price = product.price ?? 0;
-    const rating = product.rating ?? 0;
-    const sale = product.sale ?? false;
-
-    const matchesSearch =
-      name.includes(searchTerm) || description.includes(searchTerm);
-    const matchesCategory = filters.category
-      ? category === filters.category.toLowerCase()
-      : true;
-    const matchesName = filters.name
-    ? product.name?.toLowerCase().includes(filters.name.toLowerCase())
-    : true;
-    const matchesPrice =
-      (!filters.minPrice || price >= Number(filters.minPrice)) &&
-      (!filters.maxPrice || price <= Number(filters.maxPrice));
-    const matchesRating =
-      !filters.minRating || rating >= Number(filters.minRating);
-    const matchesSale = filters.onSale ? sale : true;
-
-    return (
-      matchesSearch &&
-      matchesName &&
-      matchesCategory &&
-      matchesPrice &&
-      matchesRating &&
-      matchesSale
-    );
-  });
-
-  //   const filteredProducts = MOCK_PRODUCTS.filter((product) =>
-  //   (product.name?.toLowerCase().includes(searchTerm)) ||
-  //   (product.description?.toLowerCase().includes(searchTerm))
-  // );
 
   return (
     <section className="space-y-6 dark:bg-gray-900 dark:text-gray-100 p-6">
+      {/* Heading */}
       <div>
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
           Products
@@ -73,13 +42,31 @@ function ProductList() {
         </p>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-6">
         <ProductFilters
-          onFilterChange={(updatedFilters) => setFilters(updatedFilters)}
+          onFilterChange={(updatedFilters) =>
+            setFilters({ ...filters, ...updatedFilters, skip: 0 })
+          }
         />
       </div>
+
+      {/* Products Grid */}
       <div className="flex-1">
-        <ProductGrid products={filteredProducts} />
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Spin size="large" />
+          </div>
+        ) : error ? (
+          <div className="text-red-500 py-12">{error.message}</div>
+        ) : products.length === 0 ? (
+          <Empty
+            description="No products found"
+            style={{ marginTop: 48, marginBottom: 48 }}
+          />
+        ) : (
+          <ProductGrid products={products} />
+        )}
       </div>
     </section>
   );

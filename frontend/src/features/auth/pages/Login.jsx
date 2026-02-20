@@ -1,13 +1,22 @@
-import { Button, Form, Input, Typography } from "antd";
-import { Link } from "react-router-dom";
+import { Button, Form, Input, Typography, message } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
+import { useAuth } from "../hooks/authHook";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const Login = () => {
-  const onFinish = (values) => {
-    console.log("Login Data:", values);
-    // later → call backend API
+  const { login, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      await login(values);
+      message.success("Login successful");
+      navigate("/");
+    } catch {
+      // error handled in hook
+    }
   };
 
   return (
@@ -29,7 +38,12 @@ const Login = () => {
           <Input.Password placeholder="Enter your password" />
         </Form.Item>
 
-        <Button type="primary" htmlType="submit" block>
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          loading={loading}
+        >
           Login
         </Button>
 

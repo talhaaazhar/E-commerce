@@ -16,7 +16,7 @@ from datetime import date
 router = APIRouter(
     prefix="/admin/analytics",
     tags=["Admin Analytics"],
-    # dependencies=[Depends(require_admin)]
+    dependencies=[Depends(require_admin)]
 )
 
 @router.get("/summary")
