@@ -3,13 +3,17 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../../cart/cartSlice";
 import { toast } from "react-toastify";
 import { Button, InputNumber, Space, Typography, Divider } from "antd";
-import { ShoppingCartOutlined, HeartOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { useFavourites } from "../../favourites/hooks/useFavourites";
 
 const { Text, Paragraph } = Typography;
 
 function AddToCartButton({ product }) {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
+  const { favourites, toggleFavourite } = useFavourites();
+  
+  const isLiked = favourites.some((like) => like.product_id === product.id);
 
   const handleAddToCart = () => {
     dispatch(addToCart({ productId: product.id, quantity }))
@@ -25,6 +29,10 @@ function AddToCartButton({ product }) {
           autoClose: 2000,
         });
       });
+  };
+
+  const handleToggleFavourite = () => {
+    toggleFavourite(product.id);
   };
 
   return (
@@ -50,7 +58,11 @@ function AddToCartButton({ product }) {
         >
           Add to Cart
         </Button>
-        <Button icon={<HeartOutlined />} className="flex-none" />
+        <Button 
+          icon={isLiked ? <HeartFilled style={{ color: "red" }} /> : <HeartOutlined />} 
+          onClick={handleToggleFavourite}
+          className="flex-none"
+        />
       </Space>
 
       {/* Info / Policies */}

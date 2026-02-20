@@ -143,6 +143,15 @@ def _to_product_card_reads(
     return result
 
 
+def to_product_card_read(db: Session, product: Product) -> ProductCardRead:
+    """
+    Convert a single Product to ProductCardRead with ratings and discounts.
+    Wrapper around _to_product_card_reads for single product.
+    """
+    result = _to_product_card_reads(db, [product])
+    return result[0] if result else None
+
+
 ##
 
 def create_product_service(db: Session, data: ProductCreate) -> Product:
@@ -415,3 +424,45 @@ def get_product_detail_service(
     )
 
     return product_detail
+
+
+
+from pathlib import Path
+import uuid
+import shutil
+from fastapi import UploadFile
+
+UPLOAD_DIR = Path("media/products")
+
+
+def add_product_image(
+    db: Session,
+    product_id: int,
+    file: UploadFile,
+) -> str:
+    product = get_product_or_404(db, product_id)
+
+    if file.content_type not in ["image/jpeg", "image/png", "image/webp"]:
+        raise HTTPException(status_code=400, detail="Invalid image type")
+
+    product_folder = UPLOAD_DIR / str(product_id)
+    product_folder.mkdir(parents=True, exist_ok=True)
+
+    file_ext = file.filename.split(".")[-1]
+    filename = f"{uuid.uuid4()}.{file_ext}"
+    file_path = product_folder / filename
+
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    image_url = f"/media/products/{product_id}/{filename}"
+
+    if not product.images:
+        product.images = []
+
+    product.images.append(image_url)
+
+    db.commit()
+    db.refresh(product)
+
+    return image_url

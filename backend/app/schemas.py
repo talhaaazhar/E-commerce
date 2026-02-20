@@ -313,6 +313,7 @@ class LikeRead(BaseModel):
     id: int
     product_id: int
     created_at: datetime
+    product: Optional['ProductCardRead'] = None
 
     class Config:
         from_attributes = True

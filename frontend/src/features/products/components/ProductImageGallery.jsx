@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { getProductImages, getFallbackImage } from "../../../utils/imageUtils";
 
 function ProductImageGallery({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -8,13 +9,16 @@ function ProductImageGallery({ images }) {
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const imgRef = useRef(null);
 
-  if (!images || images.length === 0) return null;
+  // Get properly formatted image URLs
+  const productImages = getProductImages(images);
+
+  if (!productImages || productImages.length === 0) return null;
 
   const prevImage = () =>
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1));
 
   const nextImage = () =>
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1));
 
   const handleMouseMove = (e) => {
     if (!imgRef.current) return;
@@ -35,12 +39,15 @@ function ProductImageGallery({ images }) {
       >
         <img
           ref={imgRef}
-          src={images[currentIndex]}
+          src={productImages[currentIndex]}
           alt={`Product ${currentIndex + 1}`}
           className={`w-full h-full object-cover transition-transform duration-500 ease-out ${
             zoom ? "scale-150" : "scale-100"
           }`}
           style={zoom ? { transformOrigin: `${mousePos.x}% ${mousePos.y}%` } : {}}
+          onError={(e) => {
+            e.target.src = getFallbackImage();
+          }}
         />
 
         {/* Hover Hint */}
@@ -53,7 +60,7 @@ function ProductImageGallery({ images }) {
         )}
 
         {/* Navigation Arrows */}
-        {images.length > 1 && (
+        {productImages.length > 1 && (
           <>
             <Button
               shape="circle"
@@ -73,17 +80,17 @@ function ProductImageGallery({ images }) {
         )}
 
         {/* Image Counter */}
-        {images.length > 1 && (
+        {productImages.length > 1 && (
           <div className="absolute bottom-3 right-3 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium">
-            {currentIndex + 1} / {images.length}
+            {currentIndex + 1} / {productImages.length}
           </div>
         )}
       </div>
 
       {/* Thumbnails */}
-      {images.length > 1 && (
+      {productImages.length > 1 && (
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {images.map((img, idx) => (
+          {productImages.map((img, idx) => (
             <button
               key={idx}
               aria-label={`View image ${idx + 1}`}
@@ -100,6 +107,9 @@ function ProductImageGallery({ images }) {
                 src={img}
                 alt={`Thumbnail ${idx + 1}`}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = getFallbackImage();
+                }}
               />
             </button>
           ))}

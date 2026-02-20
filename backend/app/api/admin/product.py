@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query, UploadFile, File
 from typing import List, Optional
 from decimal import Decimal
 from sqlalchemy.orm import Session
@@ -13,7 +13,9 @@ from app.services.product import (
     _to_product_read,
     list_products_service, 
     _to_product_card_reads, 
-    get_product_detail_service
+    get_product_detail_service,
+    add_product_image
+
     
 )
 from app.core.database import get_db
@@ -128,3 +130,22 @@ def list_products_user(
     products = list_products_service(db=db, filters=filters)
     return _to_product_card_reads(db, products)
 
+
+
+# for images and media files, we will serve them from /media endpoint using StaticFiles in main.py. So the image URLs stored in the database should be relative to that, e.g. "media/product_images/image1.jpg".
+@router.post("/{product_id}/images")
+def upload_product_image(
+    product_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    image_url = add_product_image(
+        db=db,
+        product_id=product_id,
+        file=file,
+    )
+
+    return {
+        "message": "Image uploaded successfully",
+        "image_url": image_url,
+    }
