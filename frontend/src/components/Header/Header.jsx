@@ -86,7 +86,7 @@ const Header = () => {
             <Link to="/" className="text-gray-300 hover:text-red-600">Home</Link>
             <Link to="/products" className="text-gray-300 hover:text-red-600">Shop</Link>
             <Link to="/about" className="text-gray-300 hover:text-red-600">About Us</Link>
-            <a href="#" className="text-gray-300 hover:text-red-600">Contact</a>
+            <Link to="/favourites" className="text-gray-300 hover:text-red-600">Favourites</Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -144,7 +144,7 @@ const Header = () => {
               <Link to="/" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">🏠 Home</Link>
               <Link to="/products" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">🛍️ Shop</Link>
               <Link to="/about" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">ℹ️ About Us</Link>
-              <a href="#" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">📞 Contact</a>
+              <Link to="/favourites" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">❤️ Favourites</Link>
             </nav>
             <div className="px-4 pt-2 pb-4 border-t border-gray-600">
               <Link to="/cart" className="flex items-center justify-center w-full px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out mb-2">

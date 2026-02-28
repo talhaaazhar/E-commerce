@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException, status
 from app.models import ProductLike, Product
 
@@ -7,18 +7,25 @@ def like_product(db: Session, user_id: int, product_id: int):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    existing = db.query(ProductLike).filter_by(
+    existing = db.query(ProductLike).options(
+        joinedload(ProductLike.product)
+    ).filter_by(
         user_id=user_id,
         product_id=product_id
     ).first()
 
+    # If already liked, return existing (idempotent operation)
     if existing:
-        raise HTTPException(status_code=400, detail="Product already liked")
+        return existing
 
     like = ProductLike(user_id=user_id, product_id=product_id)
     db.add(like)
     db.commit()
     db.refresh(like)
+    
+    # Load the product relationship for the response
+    db.refresh(like, ['product'])
+    
     return like
 
 
@@ -28,14 +35,17 @@ def unlike_product(db: Session, user_id: int, product_id: int):
         product_id=product_id
     ).first()
 
+    # If not found, operation is already complete (idempotent)
     if not like:
-        raise HTTPException(status_code=404, detail="Like not found")
+        return
 
     db.delete(like)
     db.commit()
 
 
 def get_liked_products(db: Session, user_id: int):
-    return db.query(ProductLike).filter(
+    return db.query(ProductLike).options(
+        joinedload(ProductLike.product)
+    ).filter(
         ProductLike.user_id == user_id
     ).all()

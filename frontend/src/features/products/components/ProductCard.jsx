@@ -82,7 +82,10 @@ import { ShoppingOutlined, HeartOutlined, StarFilled, StarOutlined } from "@ant-
 import { getSalePrice, getDiscountPercent } from "../services/priceService";
 import { getAverageRating } from "../services/reviewService";
 import { useReviews } from "../hooks/useReviews";
+import { getProductImages } from "../../../utils/imageUtils";
 import "./ProductCard.css";
+import { useFavourites } from "../../favourites/hooks/useFavourites";
+
 
 function ProductCard({ product }) {
   const {
@@ -99,16 +102,19 @@ function ProductCard({ product }) {
 
   // Fetch reviews for this product (or use provided reviews)
   const { reviews } = useReviews(id, productReviews);
+  
+  // Use favourites hook 
+  const { favourites, toggleFavourite } = useFavourites();
+  const isLiked = favourites.some((p) => p.product_id === id);
 
   // Get dynamic values from services
   const salePrice = getSalePrice(product);
   const discountPercent = getDiscountPercent(product);
   const averageRating = getAverageRating(reviews);
 
-  const mainImage =
-    images && images.length > 0
-      ? images[0]
-      : "https://via.placeholder.com/300x200?text=No+Image";
+  // Get properly formatted image URLs
+  const productImages = getProductImages(images);
+  const mainImage = productImages[0];
 
   return (
     <Badge.Ribbon
@@ -176,8 +182,9 @@ function ProductCard({ product }) {
                 <ShoppingOutlined /> View
               </Button>
             </Link>
-            <Button className="btn-outline w-12 flex justify-center items-center">
-              <HeartOutlined />
+            <Button className="btn-outline w-12 flex justify-center items-center"
+            onClick={()=>toggleFavourite(id)}>
+              <HeartOutlined style={{ color: isLiked ? "red" : "gray" }} />
             </Button>
           </div>
         </div>
@@ -187,3 +194,4 @@ function ProductCard({ product }) {
 }
 
 export default ProductCard;
+

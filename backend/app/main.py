@@ -12,7 +12,12 @@ from app.api.admin import analytics as admin_analytics
 from app.api.customer import reviews as customer_reviews
 from app.api.customer import like as customer_like
 from app.api.customer import profile as customer_profile
+from fastapi.staticfiles import StaticFiles
 app = FastAPI()
+
+# for images and media files
+app.mount("/media", StaticFiles(directory="media"), name="media")
+
 
 # --------------------- CORS ---------------------
 app.add_middleware(
