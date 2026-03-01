@@ -1,7 +1,7 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
-import { useAuth } from "../hooks/authHook";
+import { useAuth } from "../hooks/useAuth";
 
 const { Text } = Typography;
 
@@ -11,9 +11,15 @@ const Login = () => {
 
   const onFinish = async (values) => {
     try {
-      await login(values);
+      const user = await login(values);
       message.success("Login successful");
-      navigate("/");
+      
+      // Redirect based on role
+      if (user?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch {
       // error handled in hook
     }

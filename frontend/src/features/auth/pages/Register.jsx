@@ -1,7 +1,7 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import AuthCard from "../components/AuthCard";
-import { useAuth } from "../hooks/authHook";
+import { useAuth } from "../hooks/useAuth";
 
 const { Text } = Typography;
 

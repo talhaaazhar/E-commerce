@@ -95,7 +95,8 @@ function CartSummary({ totalPrice }) {
           size="large"
           icon={<LockOutlined />}
           disabled={safeTotal === 0}
-          onClick={() => alert("Checkout coming soon")}
+          onClick={() => navigate("/checkout")}
+
         >
           Proceed to Checkout
         </Button>
