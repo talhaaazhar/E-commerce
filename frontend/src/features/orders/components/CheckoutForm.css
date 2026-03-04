@@ -1,0 +1,34 @@
+.checkout-container {
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.checkout-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.checkout-card {
+  border-radius: 12px;
+}
+
+.order-items {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.total-row {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.checkout-button {
+  height: 48px;
+  font-weight: 600;
+}

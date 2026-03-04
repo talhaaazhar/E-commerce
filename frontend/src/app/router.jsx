@@ -12,6 +12,14 @@ import Login from "../features/auth/pages/Login";
 import Register from "../features/auth/pages/Register";
 import SettingsPage from "../features/profile/pages/SettingsPage";  
 import FavouritesPage from "../features/favourites/pages/FavouritesPage";
+import CheckoutPage from "../features/orders/pages/CheckoutPage";
+import OrdersPage from "../features/orders/pages/OrdersPage";
+
+// Admin Pages
+// import AdminProductPage from "../features/adminproducts/pages/ProductPage";
+
+// Protected Routes
+import AdminProtectedRoute from "../components/AdminProtectedRoute";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }) => {
@@ -65,6 +73,33 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+      path="/checkout"
+      element={
+        <ProtectedRoute>
+          <CheckoutPage />
+        </ProtectedRoute>
+      }
+      />
+      
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            <OrdersPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Protected Routes */}
+      <Route element={<AdminProtectedRoute />}>
+        <Route path="/admin" element={<Navigate to="/admin/products" replace />} />
+        <Route path="/admin/products" element={<div>Admin Products (Coming Soon)</div>}  />
+        <Route path="/admin/orders" element={<div>Admin Orders (Coming Soon)</div>} />
+        <Route path="/admin/analytics" element={<div>Admin Analytics (Coming Soon)</div>} />
+        <Route path="/admin/settings" element={<SettingsPage />} />
+      </Route>
 
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />

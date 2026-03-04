@@ -35,7 +35,7 @@ def unlike_product(db: Session, user_id: int, product_id: int):
         product_id=product_id
     ).first()
 
-    # If not found, operation is already complete (idempotent)
+    # If not found, operation is already complete
     if not like:
         return
 

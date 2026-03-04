@@ -85,6 +85,7 @@ const Header = () => {
           <nav className="hidden md:flex space-x-6">
             <Link to="/" className="text-gray-300 hover:text-red-600">Home</Link>
             <Link to="/products" className="text-gray-300 hover:text-red-600">Shop</Link>
+            <Link to="/orders" className="text-gray-300 hover:text-red-600">Orders</Link>
             <Link to="/about" className="text-gray-300 hover:text-red-600">About Us</Link>
             <Link to="/favourites" className="text-gray-300 hover:text-red-600">Favourites</Link>
           </nav>
@@ -143,6 +144,7 @@ const Header = () => {
             <nav className="px-4 pt-4 pb-2 space-y-2">
               <Link to="/" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">🏠 Home</Link>
               <Link to="/products" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">🛍️ Shop</Link>
+              <Link to="/orders" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">📦 Orders</Link>
               <Link to="/about" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">ℹ️ About Us</Link>
               <Link to="/favourites" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">❤️ Favourites</Link>
             </nav>

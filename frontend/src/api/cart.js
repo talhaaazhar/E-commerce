@@ -1,6 +1,4 @@
-// src/api/cart.api.js
 import { apiClient } from "./client";
-
 
 
 export const fetchCartApi = () =>
