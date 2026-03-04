@@ -228,6 +228,13 @@ class DiscountAssign(BaseModel):
     product_ids: Optional[List[int]] = []
     category: Optional[str]=None
 
+
+class DiscountDeassign(BaseModel):
+    product_ids: Optional[List[int]] = []
+    product_names: Optional[List[str]] = []
+    category: Optional[str] = None
+    remove_category_products: bool = True
+
 # For reading discount info
 class DiscountRead(BaseModel):
     id: int

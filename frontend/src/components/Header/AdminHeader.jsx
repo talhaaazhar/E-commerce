@@ -32,6 +32,7 @@ const AdminHeader = () => {
           <nav className="hidden md:flex space-x-6">
             <Link to="/admin/orders" className="text-gray-300 hover:text-red-600">Orders</Link>
             <Link to="/admin/products" className="text-gray-300 hover:text-red-600">Products</Link>
+            <Link to="/admin/discounts" className="text-gray-300 hover:text-red-600">Discounts</Link>
             <Link to="/admin/analytics" className="text-gray-300 hover:text-red-600">Analytics</Link>
           </nav>
 
@@ -82,6 +83,9 @@ const AdminHeader = () => {
               <Link to="/admin/products" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">
                 🛍️ Products
               </Link>
+              <link to="/admin/discounts" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">
+                💸 Discounts
+              </link>
               <Link to="/admin/analytics" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">
                 📊 Analytics
               </Link>

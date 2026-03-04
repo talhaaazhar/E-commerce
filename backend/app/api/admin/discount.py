@@ -4,13 +4,14 @@ from typing import List
 from app.core.database import get_db
 from app.dependencies import require_admin
 from app.schemas import (
-    DiscountCreate, DiscountRead, DiscountUpdate, DiscountAssign, DiscountMappingRead
+    DiscountCreate, DiscountRead, DiscountUpdate, DiscountAssign, DiscountDeassign, DiscountMappingRead
 )
 from app.services.discount import (
     create_discount_service,
     update_discount_service,
     list_discounts_service,
     assign_discount_service,
+    deassign_discount_service,
     deactivate_discount_service,
     activate_discount_service,
     list_discount_mappings_service,
@@ -43,6 +44,10 @@ def list_discounts(db: Session = Depends(get_db)):
 def assign_discount(data: DiscountAssign, db: Session = Depends(get_db)):
     return assign_discount_service(db, data)
 
+
+@router.post("/{discount_id}/deassign")
+def deassign_discount(discount_id: int, data: DiscountDeassign, db: Session = Depends(get_db)):
+    return deassign_discount_service(db, discount_id, data)
 
 
 @router.patch("/{discount_id}/deactivate")

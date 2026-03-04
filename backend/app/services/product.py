@@ -466,3 +466,16 @@ def add_product_image(
     db.refresh(product)
 
     return image_url
+
+def remove_product_image_service(db: Session, product_id: int, image_url: str):
+    product = get_product_detail_service(db, product_id)
+
+    if image_url not in product.images:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    product.images.remove(image_url)
+
+    db.commit()
+    db.refresh(product)
+
+    return product

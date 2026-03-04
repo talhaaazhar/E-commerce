@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AddToCartButton from "./AddToCartButton";
 import { useReviews } from "../hooks/useReviews";
 import { Tag, Tooltip, Rate, Button, Typography, Divider, Space } from "antd";
-import { getSalePrice } from "../services/priceService";
+import { getSalePrice, getDiscountPercent } from "../services/priceService";
 import { getAverageRating } from "../services/reviewService";
 
 const { Title, Paragraph, Text } = Typography;
@@ -14,8 +14,9 @@ function ProductInfo({ product }) {
 
   const { reviews } = useReviews(product.id);
 
-  const hasSale = product.sale && product.sale > 0;
   const salePrice = getSalePrice(product);
+  const discountPercent = getDiscountPercent(product);
+  const hasSale = Boolean(product?.hasDiscount && salePrice !== null);
   const averageRating = getAverageRating(reviews);
 
   const [showFullDesc, setShowFullDesc] = useState(false);
@@ -43,7 +44,7 @@ function ProductInfo({ product }) {
                   ${Number(product.price).toFixed(2)}
                 </Text>
                 <Tag color="red">
-                  Save {Math.round(product.sale * 100)}%
+                  {discountPercent > 0 ? `Save ${discountPercent}%` : "On Sale"}
                 </Tag>
               </>
             )}
