@@ -14,6 +14,7 @@ import SettingsPage from "../features/profile/pages/SettingsPage";
 import FavouritesPage from "../features/favourites/pages/FavouritesPage";
 import CheckoutPage from "../features/orders/pages/CheckoutPage";
 import OrdersPage from "../features/orders/pages/OrdersPage";
+import AdminOrdersPage from "../features/adminOrders/pages/AdminOrdersPage";
 
 import DiscountsPage from "../features/adminDiscounts/pages/DiscountsPage";
 
@@ -99,7 +100,7 @@ function AppRouter() {
         <Route path="/admin" element={<Navigate to="/admin/products" replace />} />
         <Route path="/admin/products" element={<AdminProductPage />} />
         <Route path="/admin/discounts" element={<DiscountsPage />} />
-        <Route path="/admin/orders" element={<div>Admin Orders (Coming Soon)</div>} />
+        <Route path="/admin/orders" element={<AdminOrdersPage />} />
         <Route path="/admin/analytics" element={<div>Admin Analytics (Coming Soon)</div>} />
         <Route path="/admin/settings" element={<SettingsPage />} />
       </Route>

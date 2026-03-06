@@ -10,18 +10,32 @@ import {
   Divider,
 } from "antd";
 import { UploadOutlined, CloseCircleOutlined, XOutlined } from "@ant-design/icons";
+import "./ProductModal.css";
 
 const { TextArea } = Input;
 
 export default function ProductModal({ visible, product, onClose, onSubmit }) {
   const [form] = Form.useForm();
-  const [images, setImages] = useState(product?.images || []);
+  const [existingImages, setExistingImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
   const [tags, setTags] = useState(product?.tags || []);
   const [tagInput, setTagInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log("ProductModal useEffect triggered", {
+      visible,
+      productId: product?.id,
+      productImages: product?.images,
+      imageType: typeof product?.images,
+      isArray: Array.isArray(product?.images),
+    });
+    
     if (visible && product) {
+      console.log("Setting form with product data", {
+        name: product.name,
+        images: product?.images,
+      });
       form.setFieldsValue({
         name: product.name,
         description: product.description,
@@ -29,11 +43,28 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
         price: product.price,
         stock: product.stock,
       });
-      setImages(product.images || []);
+      // Separate existing images from new ones
+      // Only treat /media/... URLs as valid existing images
+      let productImages = Array.isArray(product.images) ? product.images : [];
+      const validImages = productImages.filter(img => 
+        typeof img === 'string' && img.startsWith('/media/')
+      );
+      const corruptedImages = productImages.filter(img => 
+        typeof img === 'string' && !img.startsWith('/media/')
+      );
+      
+      if (corruptedImages.length > 0) {
+        console.warn("Found corrupted image URLs (data URLs stored in DB):", corruptedImages);
+      }
+      
+      console.log("Setting images state:", { validImages, corruptedImages });
+      setExistingImages(validImages);
+      setNewImages([]);
       setTags(product.tags || []);
     } else if (visible) {
       form.resetFields();
-      setImages([]);
+      setExistingImages([]);
+      setNewImages([]);
       setTags([]);
     }
   }, [visible, product, form]);
@@ -51,13 +82,31 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
   };
 
   const handleFinish = async (values) => {
-    const payload = { ...values, tag_names: tags, images };
+    // Don't send images in the JSON payload - they'll be uploaded separately
+    // Return both existing and new images for the parent to handle
+    const payload = { 
+      ...values, 
+      tag_names: tags, 
+      existingImages,
+      newImages
+    };
+    
+    console.log("ProductModal handleFinish - Payload:", {
+      name: payload.name,
+      existingImagesCount: existingImages.length,
+      newImagesCount: newImages.length,
+      totalImages: existingImages.length + newImages.length,
+    });
+    
     try {
       setLoading(true);
+      console.log("Calling onSubmit with payload...");
       await onSubmit(payload);
+      console.log("onSubmit completed successfully");
       onClose();
     } catch (err) {
-      message.error("Failed to save product");
+      console.error("Error saving product:", err);
+      message.error("Failed to save product: " + (err.response?.data?.detail || err.message));
     } finally {
       setLoading(false);
     }
@@ -69,8 +118,14 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
       onCancel={onClose}
       footer={null}
       width={window.innerWidth > 768 ? 800 : "95%"}
-      style={{ maxWidth: "100vw" }}
-      bodyStyle={{ maxHeight: "80vh", overflowY: "auto", padding: "24px" }}
+      className="modern-modal product-modal-container"
+      styles={{
+        body: {
+          maxHeight: "80vh",
+          overflowY: "auto",
+          padding: "24px"
+        }
+      }}
       title={
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-gray-800 dark:text-white">
@@ -78,14 +133,13 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
           </span>
         </div>
       }
-      className="modern-modal"
     >
       <Form
         form={form}
         layout="vertical"
         onFinish={handleFinish}
         initialValues={{ price: 0, stock: 0 }}
-        className="space-y-4"
+        className="product-modal-form"
       >
         {/* Basic Information Section */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-lg mb-6">
@@ -165,22 +219,22 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
             🏷️ Tags
           </h3>
 
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="tag-container">
             {tags.map((tag) => (
               <div
                 key={tag}
-                className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full text-sm font-medium hover:shadow-md transition"
+                className="tag-item"
               >
                 <span>{tag}</span>
                 <XOutlined
                   onClick={() => handleRemoveTag(tag)}
-                  className="cursor-pointer hover:text-yellow-200 transition"
+                  className="tag-remove-icon"
                 />
               </div>
             ))}
           </div>
 
-          <div className="flex gap-2">
+          <div className="tag-input-container">
             <Input
               size="middle"
               value={tagInput}
@@ -202,59 +256,125 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
         {/* Images */}
         <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-lg mb-6">
           <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-4">
-            🖼️ Product Images
+            🖼️ Product Images ({existingImages.length + newImages.length})
           </h3>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
-            {images.map((img) => (
-              <div
-                key={img}
-                className="relative group rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
-              >
-                <img
-                  src={img}
-                  alt="product"
-                  className="w-full h-24 object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                  <CloseCircleOutlined
-                    onClick={() => setImages(images.filter((image) => image !== img))}
-                    className="text-white text-2xl cursor-pointer hover:text-red-300 transition"
-                  />
-                </div>
+          <div className="image-grid">
+            {/* Existing images */}
+            {existingImages && existingImages.length > 0 && (
+              existingImages.map((img) => {
+                console.log("Rendering existing image:", { img });
+                return (
+                  <div
+                    key={img}
+                    className="image-item"
+                  >
+                    <img
+                      src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}${img}`}
+                      alt="product"
+                      className="image-preview"
+                      onError={(e) => {
+                        console.error("Image failed to load:", img);
+                        e.target.src = "https://via.placeholder.com/100?text=Error";
+                      }}
+                    />
+                    <div className="image-badge image-badge-uploaded">
+                      Uploaded
+                    </div>
+                    <div className="image-overlay">
+                      <CloseCircleOutlined
+                        onClick={() => {
+                          console.log("Removing existing image:", img);
+                          setExistingImages(existingImages.filter((image) => image !== img));
+                        }}
+                        className="image-delete-icon"
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            
+            {/* New images (data URLs) */}
+            {newImages && newImages.length > 0 && (
+              newImages.map((img) => {
+                console.log("Rendering new image:", { img });
+                return (
+                  <div
+                    key={img}
+                    className="image-item"
+                  >
+                    <img
+                      src={img}
+                      alt="product"
+                      className="image-preview"
+                      onError={(e) => {
+                        console.error("Image failed to load:", img);
+                        e.target.src = "https://via.placeholder.com/100?text=Error";
+                      }}
+                    />
+                    <div className="image-badge image-badge-new">
+                      New
+                    </div>
+                    <div className="image-overlay">
+                      <CloseCircleOutlined
+                        onClick={() => {
+                          console.log("Removing new image:", img);
+                          setNewImages(newImages.filter((image) => image !== img));
+                        }}
+                        className="image-delete-icon"
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+
+            {existingImages.length === 0 && newImages.length === 0 && (
+              <div className="no-images-message">
+                No images yet
               </div>
-            ))}
+            )}
 
             <Upload
               customRequest={({ file }) => {
+                console.log("File selected:", file.name, "Type:", file.type);
                 const reader = new FileReader();
                 reader.onload = (e) => {
                   const dataUrl = e.target.result;
-                  if (!images.includes(dataUrl)) {
-                    setImages([...images, dataUrl]);
+                  console.log("DataURL created, length:", dataUrl.length, "starts with:", dataUrl.substring(0, 30));
+                  if (!newImages.includes(dataUrl)) {
+                    console.log("Adding new image to state. Current count:", newImages.length);
+                    setNewImages([...newImages, dataUrl]);
+                  } else {
+                    console.warn("Image already exists in newImages array");
                   }
                   message.success("Image added successfully");
+                };
+                reader.onerror = (err) => {
+                  console.error("FileReader error:", err);
+                  message.error("Failed to read file");
                 };
                 reader.readAsDataURL(file);
               }}
               showUploadList={false}
               accept=".jpg,.jpeg,.png,.webp"
             >
-              <div className="border-2 border-dashed border-blue-300 dark:border-blue-500 rounded-lg p-4 text-center hover:border-blue-500 transition cursor-pointer h-24 flex flex-col items-center justify-center bg-white dark:bg-gray-700">
-                <UploadOutlined className="text-2xl text-blue-500 mb-1" />
-                <span className="text-xs text-gray-600 dark:text-gray-300">Upload</span>
+              <div className="upload-area">
+                <UploadOutlined className="upload-icon" />
+                <span className="upload-text">Upload</span>
               </div>
             </Upload>
           </div>
 
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="upload-hint">
             💡 Drag and drop or click to upload images. Supported formats: JPG, PNG, WebP
           </p>
         </div>
 
         {/* Submit Buttons */}
         <Divider className="my-4" />
-        <div className="flex gap-2 justify-end">
+        <div className="modal-actions">
           <Button
             onClick={onClose}
             className="rounded-lg px-6"
@@ -271,54 +391,6 @@ export default function ProductModal({ visible, product, onClose, onSubmit }) {
           </Button>
         </div>
       </Form>
-
-      <style>{`
-        .modern-modal .ant-modal-content {
-          border-radius: 12px;
-          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        }
-
-        .modern-modal.dark .ant-modal-content {
-          background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-        }
-
-        .modern-modal .ant-modal-header {
-          border-radius: 12px 12px 0 0;
-          border-bottom: 2px solid #e5e7eb;
-          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        }
-
-        .modern-modal.dark .ant-modal-header {
-          border-bottom: 2px solid #374151;
-          background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-        }
-
-        .modern-modal .ant-input,
-        .modern-modal .ant-input-number {
-          border-radius: 8px;
-          transition: all 0.3s ease;
-        }
-
-        .modern-modal .ant-input:focus,
-        .modern-modal .ant-input-number-input:focus {
-          border-color: #3b82f6 !important;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-        }
-
-        .modern-modal .ant-input-textarea {
-          border-radius: 8px;
-        }
-
-        @media (max-width: 768px) {
-          .modern-modal .ant-modal {
-            margin: 0;
-          }
-
-          .modern-modal .ant-modal-content {
-            border-radius: 16px;
-          }
-        }
-      `}</style>
     </Modal>
   );
 }

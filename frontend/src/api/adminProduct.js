@@ -9,9 +9,8 @@ export const activateProduct = (productId) => apiClient.patch(`/admin/products/$
 export const uploadProductImage = (productId, file) => {
   const formData = new FormData();
   formData.append("file", file);
-  return apiClient.post(`/admin/products/${productId}/images`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  // Don't set Content-Type header - let axios set it automatically with boundary
+  return apiClient.post(`/admin/products/${productId}/images`, formData);
 };
 export const removeProductImage = (productId, imageUrl) => apiClient.delete(`/admin/products/${productId}/images`, {
   params: { image_url: imageUrl },

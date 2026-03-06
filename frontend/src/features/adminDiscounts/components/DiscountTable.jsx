@@ -1,6 +1,6 @@
 import React from "react";
-import { Table, Button, Space, Tag, Popconfirm, Tooltip } from "antd";
-import { EditOutlined, DeleteOutlined, LockOutlined, UnlockOutlined, LinkOutlined } from "@ant-design/icons";
+import { Table, Button, Space, Tag, Popconfirm, Tooltip, Select } from "antd";
+import { EditOutlined, DeleteOutlined, LinkOutlined } from "@ant-design/icons";
 
 export const DiscountTable = ({
   discounts,
@@ -38,11 +38,26 @@ export const DiscountTable = ({
       title: "Status",
       dataIndex: "is_active",
       key: "active",
-      width: 100,
+      width: 180,
       render: (_, record) => (
-        <Tag color={record.is_active ? "green" : "red"} className="font-semibold">
-          {record.is_active ? "✓ Active" : "○ Inactive"}
-        </Tag>
+        <Tooltip title="Change status">
+          <Select
+            size="small"
+            value={record.is_active ? "active" : "inactive"}
+            style={{ minWidth: 130 }}
+            className="rounded-full"
+            onChange={(value) => {
+              const nextIsActive = value === "active";
+              if (nextIsActive !== record.is_active) {
+                onToggleActive(getDiscountId(record), record.is_active);
+              }
+            }}
+            options={[
+              { value: "active", label: "🟢 Active" },
+              { value: "inactive", label: "🔴 Inactive" },
+            ]}
+          />
+        </Tooltip>
       ),
     },
     {
@@ -118,21 +133,6 @@ export const DiscountTable = ({
               />
             </Tooltip>
           )}
-          <Popconfirm
-            title={`${record.is_active ? "Deactivate" : "Activate"} this discount?`}
-            onConfirm={() => onToggleActive(getDiscountId(record), record.is_active)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Tooltip title={record.is_active ? "Deactivate" : "Activate"}>
-              <Button
-                type={record.is_active ? "default" : "primary"}
-                size="small"
-                icon={record.is_active ? <LockOutlined /> : <UnlockOutlined />}
-                danger={record.is_active}
-              />
-            </Tooltip>
-          </Popconfirm>
           <Popconfirm
             title="Delete this discount?"
             description="This action cannot be undone."

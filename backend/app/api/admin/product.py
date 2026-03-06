@@ -155,7 +155,7 @@ def upload_product_image(
 @router.delete("/{product_id}/images")
 def remove_product_image(
     product_id: int,
-    image_url: str,
+    image_url: str = Query(...),
     db: Session = Depends(get_db),
 ):
     remove_product_image_service(
