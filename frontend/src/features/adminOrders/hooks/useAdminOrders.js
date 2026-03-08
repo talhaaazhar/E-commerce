@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import * as service from "../services/orderService";
+import * as service from "../services/adminOrderService";
 
 /**
  * Fetch all orders

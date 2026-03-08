@@ -1,0 +1,142 @@
+.revenue-filter-popover {
+  width: 340px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.filter-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.filter-title-icon {
+  font-size: 20px;
+  color: #3b82f6;
+  padding: 8px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-input {
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.filter-input:hover {
+  border-color: #3b82f6;
+}
+
+.filter-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.apply-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  height: 40px;
+}
+
+.apply-btn:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.reset-btn {
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  font-weight: 600;
+  height: 40px;
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.filter-trigger-btn {
+  border-radius: 10px;
+  font-weight: 600;
+  border: 2px solid #e5e7eb;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-trigger-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Dark mode */
+.dark .revenue-filter-popover {
+  background: #1f2937;
+}
+
+.dark .filter-title {
+  color: #f3f4f6;
+}
+
+.dark .filter-label {
+  color: #d1d5db;
+}
+
+.dark .filter-input {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark .filter-input:hover {
+  border-color: #3b82f6;
+}
+
+.dark .reset-btn {
+  background: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+.dark .reset-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #4b5563;
+}
+
+.revenue-filter-overlay .ant-popover-inner {
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}

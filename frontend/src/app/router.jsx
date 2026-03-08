@@ -14,12 +14,13 @@ import SettingsPage from "../features/profile/pages/SettingsPage";
 import FavouritesPage from "../features/favourites/pages/FavouritesPage";
 import CheckoutPage from "../features/orders/pages/CheckoutPage";
 import OrdersPage from "../features/orders/pages/OrdersPage";
-import AdminOrdersPage from "../features/adminOrders/pages/AdminOrdersPage";
 
-import DiscountsPage from "../features/adminDiscounts/pages/DiscountsPage";
 
 // Admin Pages
 import AdminProductPage from "../features/adminProducts/pages/ProductPage";
+import AdminOrdersPage from "../features/adminOrders/pages/AdminOrdersPage";
+import DiscountsPage from "../features/adminDiscounts/pages/DiscountsPage";
+import AdminAnalyticsPage from "../features/adminAnalytics/pages/AdminAnalyticsPage";
 
 // Protected Routes
 import AdminProtectedRoute from "../components/AdminProtectedRoute";
@@ -101,7 +102,7 @@ function AppRouter() {
         <Route path="/admin/products" element={<AdminProductPage />} />
         <Route path="/admin/discounts" element={<DiscountsPage />} />
         <Route path="/admin/orders" element={<AdminOrdersPage />} />
-        <Route path="/admin/analytics" element={<div>Admin Analytics (Coming Soon)</div>} />
+        <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
         <Route path="/admin/settings" element={<SettingsPage />} />
       </Route>
 

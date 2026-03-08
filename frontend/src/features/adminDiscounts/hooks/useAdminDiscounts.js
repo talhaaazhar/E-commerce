@@ -1,4 +1,3 @@
-// src/features/adminProducts/hooks/useDiscounts.js
 import { useState, useEffect, useCallback } from "react";
 import { message } from "antd";
 import {
@@ -10,7 +9,7 @@ import {
   deactivateDiscount as deactivateDiscountService,
   activateDiscount as activateDiscountService,
   deleteDiscount as deleteDiscountService,
-} from "../services/discountService";
+} from "../services/adminDiscountService";
 
 export const useDiscounts = () => {
   const [discounts, setDiscounts] = useState([]);

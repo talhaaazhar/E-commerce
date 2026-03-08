@@ -8,7 +8,7 @@ import {
   remove,
   uploadImage,
   removeImage,
-} from "../services/productService";
+} from "../services/adminProductService";
 
 export const useFetchProducts = (params) => {
   return useQuery({

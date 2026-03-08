@@ -30,7 +30,7 @@ import {
   useRemoveProduct,
   useUploadImage,
   useRemoveImage,
-} from "../hooks/useProducts";
+} from "../hooks/useAdminProducts";
 
 const { Title } = Typography;
 

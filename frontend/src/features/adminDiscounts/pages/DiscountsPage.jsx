@@ -8,7 +8,7 @@ import DiscountFormModal from "../components/DiscountFormModal";
 import AssignDiscountModal from "../components/AssignDiscountModal";
 import DeassignDiscountModal from "../components/DeassignDiscountModal";
 
-import { useDiscounts } from "../hooks/useDiscounts";
+import { useDiscounts } from "../hooks/useAdminDiscounts";
 
 const { Title, Text } = Typography;
 

@@ -1,4 +1,3 @@
-// src/features/adminDiscounts/services/adminDiscountsService.js
 import {
   createDiscount as createDiscountApi,
   updateDiscount as updateDiscountApi,

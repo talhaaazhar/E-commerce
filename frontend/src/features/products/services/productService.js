@@ -1,4 +1,3 @@
-// features/products/services/productService.js
 import * as productApi from "../../../api/product";
 
 const toNumberOrNull = (value) => {

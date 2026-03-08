@@ -139,12 +139,6 @@ def revenue_by_product_service(
     start_date=None,
     end_date=None,
 ):
-    if not any([product_id, product_name, category]):
-        raise HTTPException(
-            status_code=400,
-            detail="Provide product_id, product_name, or category"
-        )
-
     query = (
         db.query(
             Product.id.label("product_id"),
@@ -157,6 +151,14 @@ def revenue_by_product_service(
         .join(Order, Order.id == OrderItem.order_id)
         .filter(Order.status.in_([OrderStatus.paid, OrderStatus.completed]))
     )
+
+    # Apply filters if provided
+    if product_id:
+        query = query.filter(Product.id == product_id)
+    if product_name:
+        query = query.filter(Product.name.ilike(f"%{product_name}%"))
+    if category:
+        query = query.filter(Product.category.ilike(f"%{category}%"))
 
     # Filters
     if product_id:

@@ -23,7 +23,7 @@ import {
   useDeactivateProduct,
   useActivateProduct,
   useRemoveProduct,
-} from "../hooks/useProducts";
+} from "../hooks/useAdminProducts";
 import ProductModal from "./ProductModal";
 
 export default function ProductTable() {
