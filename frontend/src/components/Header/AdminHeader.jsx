@@ -1,13 +1,42 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Bars3Icon, XMarkIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Bars3Icon, XMarkIcon, Cog6ToothIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { logout as logoutAction } from "../../features/auth/authSlice";
 
 const AdminHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const search = queryParams.get("search") || "";
+    setSearchTerm(search);
+  }, [location.search]);
+
+  useEffect(() => {
+    // Only navigate if we're already on the products page or if there's a search term
+    const isOnProductsPage = location.pathname === "/admin/products";
+    
+    if (!isOnProductsPage && !searchTerm.trim()) {
+      // Don't navigate away from other pages when search is empty
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      if (searchTerm.trim() !== "") {
+        navigate(`/admin/products?search=${encodeURIComponent(searchTerm.trim())}`);
+      } else if (isOnProductsPage) {
+        // Only clear search if already on products page
+        navigate("/admin/products");
+      }
+    }, 200);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm, navigate, location.pathname]);
 
   const auth = useSelector((state) => state.auth);
   const user = auth?.user;
@@ -28,10 +57,25 @@ const AdminHeader = () => {
             NovaGoods Admin
           </Link>
 
+          {/* Search Bar */}
+          <div className="flex-1 max-w-md mx-2 sm:mx-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-gray-800 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-white-300"
+              />
+              <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+
           {/* Navigation */}
-          <nav className="hidden md:flex space-x-6">
+          <nav className="hidden md:flex space-x-6 mr-4">
             <Link to="/admin/orders" className="text-gray-300 hover:text-red-600">Orders</Link>
             <Link to="/admin/products" className="text-gray-300 hover:text-red-600">Products</Link>
+            <Link to="/admin/discounts" className="text-gray-300 hover:text-red-600">Discounts</Link>
             <Link to="/admin/analytics" className="text-gray-300 hover:text-red-600">Analytics</Link>
           </nav>
 
@@ -75,14 +119,46 @@ const AdminHeader = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden bg-gray-800 border-t border-gray-700 shadow-lg animate-in slide-in-from-top-2 duration-200">
-            <nav className="px-4 pt-4 pb-2 space-y-2">
-              <Link to="/admin/orders" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">
+            {/* Mobile Search */}
+            <div className="px-4 pt-4 pb-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-white-300"
+                />
+                <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+            <nav className="px-4 pt-2 pb-2 space-y-2">
+              <Link
+                to="/admin/orders"
+                onClick={() => setIsMenuOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out"
+              >
                 📦 Orders
               </Link>
-              <Link to="/admin/products" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">
+              <Link
+                to="/admin/products"
+                onClick={() => setIsMenuOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out"
+              >
                 🛍️ Products
               </Link>
-              <Link to="/admin/analytics" className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out">
+              <Link
+                to="/admin/discounts"
+                onClick={() => setIsMenuOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out"
+              >
+                💸 Discounts
+              </Link>
+              <Link
+                to="/admin/analytics"
+                onClick={() => setIsMenuOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-200 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-150 ease-in-out"
+              >
                 📊 Analytics
               </Link>
             </nav>

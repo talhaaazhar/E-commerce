@@ -14,7 +14,8 @@ from app.services.product import (
     list_products_service, 
     _to_product_card_reads, 
     get_product_detail_service,
-    add_product_image
+    add_product_image,
+    remove_product_image_service
 
     
 )
@@ -126,7 +127,7 @@ def list_products_user(
     filters: ProductFilter = Depends(),
     db: Session = Depends(get_db)
 ):
-    filters.is_active = True
+    # filters.is_active = True
     products = list_products_service(db=db, filters=filters)
     return _to_product_card_reads(db, products)
 
@@ -149,3 +150,18 @@ def upload_product_image(
         "message": "Image uploaded successfully",
         "image_url": image_url,
     }
+
+
+@router.delete("/{product_id}/images")
+def remove_product_image(
+    product_id: int,
+    image_url: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    remove_product_image_service(
+        db=db,
+        product_id=product_id,
+        image_url=image_url,
+    )
+
+    return {"message": "Image removed successfully"}

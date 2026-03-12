@@ -33,6 +33,7 @@ function ProductCard({ product }) {
   // Get dynamic values from services
   const salePrice = getSalePrice(product);
   const discountPercent = getDiscountPercent(product);
+  const hasDiscount = Boolean(product?.hasDiscount && salePrice !== null);
   const averageRating = getAverageRating(reviews);
 
   // Get properly formatted image URLs
@@ -41,9 +42,9 @@ function ProductCard({ product }) {
 
   return (
     <Badge.Ribbon
-      text={salePrice ? `SALE ${discountPercent}%` : ""}
+      text={hasDiscount ? (discountPercent > 0 ? `SALE ${discountPercent}%` : "SALE") : ""}
       color="red"
-      style={{ display: salePrice ? "block" : "none" }}
+      style={{ display: hasDiscount ? "block" : "none" }}
     >
       <div className="product-card">
         <div className="product-image relative overflow-visible">
@@ -73,9 +74,9 @@ function ProductCard({ product }) {
           <div className="flex justify-between items-center">
             <div>
               <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                ${salePrice ? Number(salePrice).toFixed(2) : Number(price).toFixed(2)}
+                ${hasDiscount ? Number(salePrice).toFixed(2) : Number(price).toFixed(2)}
               </span>
-              {salePrice && (
+              {hasDiscount && (
                 <span className="text-sm text-gray-500 line-through ml-2">
                   ${Number(price).toFixed(2)}
                 </span>

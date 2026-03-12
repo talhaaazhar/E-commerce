@@ -1,0 +1,78 @@
+.analytics-chart-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.analytics-chart-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.chart-icon {
+  font-size: 18px;
+  color: #3b82f6;
+  padding: 8px;
+  background: #eff6ff;
+  border-radius: 8px;
+}
+
+/* Table styling enhancements */
+.analytics-chart-card .ant-table {
+  font-size: 14px;
+}
+
+.analytics-chart-card .ant-table-thead > tr > th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 16px;
+}
+
+.analytics-chart-card .ant-table-tbody > tr > td {
+  padding: 12px 16px;
+}
+
+.analytics-chart-card .ant-table-tbody > tr {
+  transition: background 0.2s ease;
+}
+
+.analytics-chart-card .ant-table-tbody > tr:hover {
+  background: #f9fafb;
+}
+
+/* Dark mode */
+.dark .analytics-chart-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.dark .chart-header {
+  color: #f3f4f6;
+}
+
+.dark .chart-icon {
+  background: #374151;
+}
+
+.dark .analytics-chart-card .ant-table-thead > tr > th {
+  background: #111827;
+  color: #f3f4f6;
+  border-bottom-color: #374151;
+}
+
+.dark .analytics-chart-card .ant-table-tbody > tr:hover {
+  background: #111827;
+}

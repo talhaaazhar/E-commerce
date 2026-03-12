@@ -24,8 +24,41 @@ def update_discount_service(db: Session, discount_id: int, data):
     return discount
 
 def list_discounts_service(db: Session):
-    discounts = db.query(Discount).all()
-    return discounts
+    """List all discounts with their assigned products and categories."""
+    discounts = (
+        db.query(Discount)
+        .options(joinedload(Discount.targets))
+        .all()
+    )
+
+    result = []
+
+    for discount in discounts:
+        products = []
+        categories = set()
+
+        for target in discount.targets:
+            if target.product_id:
+                product = db.query(Product).filter(Product.id == target.product_id).first()
+                if product:
+                    products.append(product.name)
+
+            if target.category:
+                categories.add(target.category)
+
+        result.append({
+            "id": discount.id,
+            "name": discount.name,
+            "discount_type": discount.discount_type,
+            "discount_value": discount.discount_value,
+            "is_active": discount.is_active,
+            "start_at": discount.start_at,
+            "end_at": discount.end_at,
+            "products": products,
+            "categories": list(categories),
+        })
+
+    return result
 
 # def assign_discount_service(db: Session, data):
 #     discount = db.query(Discount).filter(Discount.id == data.discount_id).first()
@@ -221,6 +254,58 @@ def list_discount_mappings_service(db: Session):
 
     return result
 
+
+
+def deassign_discount_service(db: Session, discount_id: int, data):
+    """Remove products or categories from a discount."""
+    if (not data.product_ids) and (not getattr(data, "product_names", None)) and (not data.category):
+        raise HTTPException(
+            status_code=400,
+            detail="Provide at least one product_id, product_name, or a category"
+        )
+
+    discount = db.query(Discount).filter(
+        Discount.id == discount_id
+    ).first()
+
+    if not discount:
+        raise HTTPException(status_code=404, detail="Discount not found")
+
+    # Remove by product IDs
+    if data.product_ids:
+        db.query(DiscountTarget).filter(
+            DiscountTarget.discount_id == discount_id,
+            DiscountTarget.product_id.in_(data.product_ids)
+        ).delete(synchronize_session=False)
+
+    # Remove by product names
+    product_names = getattr(data, "product_names", None) or []
+    if product_names:
+        matched_products = db.query(Product).filter(Product.name.in_(product_names)).all()
+        matched_ids = [p.id for p in matched_products]
+        if matched_ids:
+            db.query(DiscountTarget).filter(
+                DiscountTarget.discount_id == discount_id,
+                DiscountTarget.product_id.in_(matched_ids)
+            ).delete(synchronize_session=False)
+
+    # Remove by category
+    if data.category:
+        db.query(DiscountTarget).filter(
+            DiscountTarget.discount_id == discount_id,
+            DiscountTarget.category == data.category
+        ).delete(synchronize_session=False)
+
+        # Optional: also remove product-specific assignments for products in this category
+        if getattr(data, "remove_category_products", True):
+            category_product_ids = db.query(Product.id).filter(Product.category == data.category)
+            db.query(DiscountTarget).filter(
+                DiscountTarget.discount_id == discount_id,
+                DiscountTarget.product_id.in_(category_product_ids)
+            ).delete(synchronize_session=False)
+
+    db.commit()
+    return {"message": "Discount deassigned successfully"}
 
 
 def delete_discount_service(db: Session, discount_id: int):

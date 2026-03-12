@@ -431,6 +431,7 @@ from pathlib import Path
 import uuid
 import shutil
 from fastapi import UploadFile
+from sqlalchemy.orm.attributes import flag_modified
 
 UPLOAD_DIR = Path("media/products")
 
@@ -442,7 +443,12 @@ def add_product_image(
 ) -> str:
     product = get_product_or_404(db, product_id)
 
+    print(f"[IMAGE UPLOAD] Starting upload for product {product_id}, file: {file.filename}")
+    print(f"[IMAGE UPLOAD] Content type: {file.content_type}")
+    print(f"[IMAGE UPLOAD] Current images before: {product.images}")
+
     if file.content_type not in ["image/jpeg", "image/png", "image/webp"]:
+        print(f"[IMAGE UPLOAD] Invalid content type: {file.content_type}")
         raise HTTPException(status_code=400, detail="Invalid image type")
 
     product_folder = UPLOAD_DIR / str(product_id)
@@ -452,17 +458,72 @@ def add_product_image(
     filename = f"{uuid.uuid4()}.{file_ext}"
     file_path = product_folder / filename
 
+    print(f"[IMAGE UPLOAD] Saving to path: {file_path}")
     with file_path.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     image_url = f"/media/products/{product_id}/{filename}"
+    print(f"[IMAGE UPLOAD] Image saved, URL: {image_url}")
 
-    if not product.images:
-        product.images = []
+    # Properly handle ARRAY field initialization
+    if product.images is None:
+        product.images = [image_url]
+        print(f"[IMAGE UPLOAD] Created new images array from None")
+    elif len(product.images) == 0:
+        product.images = [image_url]
+        print(f"[IMAGE UPLOAD] Created new images array from empty list")
+    else:
+        product.images.append(image_url)
+        print(f"[IMAGE UPLOAD] Appended to existing images, total count: {len(product.images)}")
 
-    product.images.append(image_url)
+    # CRITICAL: Mark the column as modified so SQLAlchemy detects the change
+    # This is necessary for PostgreSQL ARRAY mutations
+    flag_modified(product, "images")
+    print(f"[IMAGE UPLOAD] Flagged 'images' column as modified")
 
     db.commit()
     db.refresh(product)
+    
+    print(f"[IMAGE UPLOAD] Product saved, current images: {product.images}")
 
     return image_url
+
+def remove_product_image_service(db: Session, product_id: int, image_url: str):
+    # Get the actual Product model object (not the schema) so we can modify it
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    print(f"[IMAGE REMOVAL] Attempting to remove image: {image_url}")
+    print(f"[IMAGE REMOVAL] Current images: {product.images}")
+    print(f"[IMAGE REMOVAL] Images type: {type(product.images)}")
+
+    # Handle case where images might be None
+    if not product.images:
+        print(f"[IMAGE REMOVAL] Product has no images (images is None or empty)")
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    # Ensure images is a list (convert if needed)
+    if not isinstance(product.images, list):
+        print(f"[IMAGE REMOVAL] Warning: images is not a list, type is {type(product.images)}")
+        product.images = list(product.images) if product.images else []
+    
+    if image_url not in product.images:
+        print(f"[IMAGE REMOVAL] Image not found in product images")
+        print(f"[IMAGE REMOVAL] Expected: {image_url}")
+        print(f"[IMAGE REMOVAL] Available: {product.images}")
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    product.images.remove(image_url)
+    print(f"[IMAGE REMOVAL] Image removed from list, remaining count: {len(product.images)}")
+
+    # CRITICAL: Mark the column as modified so SQLAlchemy detects the change
+    flag_modified(product, "images")
+    print(f"[IMAGE REMOVAL] Flagged 'images' column as modified")
+
+    db.commit()
+    db.refresh(product)
+    
+    print(f"[IMAGE REMOVAL] Product saved, current images: {product.images}")
+
+    return product
