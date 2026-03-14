@@ -56,10 +56,19 @@ def ask_chatbot(db, session_id: str, question: str):
     # Retrieve relevant products
     products = retrieve_products(db, question)
 
-    context = "\n".join([
-        f"{p.name} - ${p.price} ({p.category})"
-        for p in products
-    ])
+    if products:
+        context = "\n\n".join([
+            "\n".join([
+                f"Product: {p.name}",
+                f"Category: {p.category or 'N/A'}",
+                f"Price: ${p.price}",
+                f"Description: {p.description or 'No description available in catalog.'}",
+                f"Tags: {', '.join(tag.name for tag in p.tags) if getattr(p, 'tags', None) else 'N/A'}",
+            ])
+            for p in products
+        ])
+    else:
+        context = "No matching products were retrieved from the catalog."
 
     system_prompt = {
         "role": "system",
@@ -71,6 +80,10 @@ Answer the user's question based on the relevant products retrieved from the dat
 If the question is not related to products, answer it based on your general knowledge.
 
 If the question is related to products, recommend the most relevant products from the retrieved list.
+
+If the user asks for a product description, use the description field from the catalog context when available.
+
+Do not claim that a description is unavailable unless the catalog context explicitly says it is unavailable.
 """
     }
 
