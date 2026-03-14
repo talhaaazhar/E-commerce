@@ -7,14 +7,24 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    OPENAI_API_KEY: str
+    PINECONE_API_KEY: str
+    PINECONE_INDEX_NAME: str = "products-rag"  # default index name
+
+
     class Config:
         env_file = ".env"
         extra = Extra.ignore  # <-- ignore unknown env vars
+        
     def validate(self):
         if not self.SECRET_KEY:
             raise ValueError("SECRET_KEY must be set in .env")
         if not self.DATABASE_URL:
             raise ValueError("DATABASE_URL must be set in .env")
+        if not self.OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY must be set in .env")
+        if not self.PINECONE_API_KEY:
+            raise ValueError("PINECONE_API_KEY must be set in .env")
 
 settings = Settings()
 settings.validate()

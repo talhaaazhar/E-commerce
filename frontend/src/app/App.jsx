@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import Header from "../components/Header/Header";
 import AdminHeader from "../components/Header/AdminHeader";
 import Footer from "../components/Footer/Footer";
+import { ChatbotButton } from "../features/chatBot/components/ChatbotButton";
 import AppRouter from "./router";
 import { getAntdTheme } from "../theme/antdTheme";
 
@@ -37,7 +38,11 @@ function AppContent({ darkMode, handleToggleTheme }) {
                    dark:bg-gray-800 dark:text-gray-300
                    hover:scale-105 transition shadow-lg"
       >
-        {darkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+        {darkMode ? (
+          <SunIcon className="w-5 h-5" />
+        ) : (
+          <MoonIcon className="w-5 h-5" />
+        )}
       </button>
 
       {/* Main Content */}
@@ -46,6 +51,7 @@ function AppContent({ darkMode, handleToggleTheme }) {
       </Content>
 
       {/* Footer */}
+      <ChatbotButton />
       <Footer />
     </Layout>
   );
@@ -93,5 +99,3 @@ function App() {
 }
 
 export default App;
-
-

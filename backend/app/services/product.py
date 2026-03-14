@@ -527,3 +527,6 @@ def remove_product_image_service(db: Session, product_id: int, image_url: str):
     print(f"[IMAGE REMOVAL] Product saved, current images: {product.images}")
 
     return product
+
+
+
