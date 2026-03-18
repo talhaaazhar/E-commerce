@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query, UploadFile, File
+from fastapi import APIRouter, Depends, status, Query, UploadFile, File, BackgroundTasks
 from typing import List, Optional
 from decimal import Decimal
 from sqlalchemy.orm import Session
@@ -21,9 +21,16 @@ from app.services.product import (
 )
 from app.core.database import get_db
 from app.dependencies import require_admin
+from app.rag.product_indexer import (
+    index_products_safe,
+    delete_product_from_index_safe,
+    reindex_all_products_safe,
+)
 
 
-
+# from app.rag.product_indexer import index_products
+# from app.rag.pinecone_client import get_index
+# index = get_index()
 
 router = APIRouter(
     prefix="/admin/products",
@@ -34,9 +41,15 @@ router = APIRouter(
 @router.post("/", response_model=ProductRead, status_code=status.HTTP_201_CREATED)
 def create_product(
     product_data: ProductCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
+    
 ):
     product = create_product_service(db, product_data)
+    # background_tasks.add_task(index_products, db)
+    # background_tasks.add_task(index_products_safe, db)
+    background_tasks.add_task(index_products_safe, db, product_ids=[product.id])
+
 
     return ProductRead(
         id=product.id,
@@ -57,9 +70,13 @@ def create_product(
 def update_product(
     product_id: int,
     data: ProductUpdate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     product = update_product_service(db, product_id, data)
+    # # background_tasks.add_task(index_products, db)
+    # background_tasks.add_task(index_products_safe, db)
+    background_tasks.add_task(index_products_safe, db, product_ids=[product.id])
 
     return ProductRead(
         id=product.id,
@@ -76,13 +93,20 @@ def update_product(
     )
 
 
+
+
 @router.delete("/{product_id}", status_code=status.HTTP_200_OK)
 def deactivate_product(
     product_id: int,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    
   
 ):
     product = deactivate_product_service(db, product_id)
+     # Remove from Pinecone
+    # background_tasks.add_task(index.delete, ids=[str(product.id)])
+    background_tasks.add_task(delete_product_from_index_safe, product.id)
     return {
         "message": "Product deactivated successfully",
         "product_id": product.id,
@@ -93,17 +117,25 @@ def deactivate_product(
 @router.delete("/{product_id}/hard", status_code=status.HTTP_204_NO_CONTENT)
 def hard_delete_product(
     product_id: int,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     hard_delete_product_service(db, product_id)
+    # background_tasks.add_task(index.delete, ids=[str(product_id)])
+    background_tasks.add_task(delete_product_from_index_safe, product_id)
+
 
 @router.patch("/{product_id}/activate", response_model=ProductRead)
 def activate_product(
     product_id: int,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
    
 ):
     product = activate_product_service(db, product_id)
+    # background_tasks.add_task(index_products, db)
+    # background_tasks.add_task(index_products_safe, db)
+    background_tasks.add_task(index_products_safe, db, product_ids=[product.id])
 
     return ProductRead(
         id=product.id,
@@ -165,3 +197,24 @@ def remove_product_image(
     )
 
     return {"message": "Image removed successfully"}
+
+
+@router.delete("/index/test-vector", status_code=status.HTTP_200_OK)
+def delete_test_vector():
+    delete_product_from_index_safe("test1")
+    return {"message": "Test vector removed from Pinecone", "vector_id": "test1"}
+
+
+@router.post("/index/rebuild", status_code=status.HTTP_200_OK)
+def rebuild_product_index(
+    active_only: bool = Query(True, description="Reindex only active products"),
+    wipe_first: bool = Query(True, description="Delete all existing vectors before reinserting (removes stale/test records)"),
+    db: Session = Depends(get_db),
+):
+    total = reindex_all_products_safe(db, active_only=active_only, wipe_first=wipe_first)
+    return {
+        "message": "Product index rebuild completed",
+        "indexed_products": total,
+        "active_only": active_only,
+        "wiped_first": wipe_first,
+    }

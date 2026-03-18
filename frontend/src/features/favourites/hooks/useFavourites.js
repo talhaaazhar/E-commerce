@@ -5,20 +5,28 @@ import {
   fetchFavourites,
 } from "../services/favouritesService";
 import { message } from "antd";
+import { useSelector } from "react-redux";
 
 export const useFavourites = () => {
+  const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
   const [favourites, setFavourites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const loadFavourites = async () => {
+    if (!isAuthenticated) {
+      setFavourites([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
       const data = await fetchFavourites();
       setFavourites(data || []);
     } catch (err) {
-      console.error("Failed to load favourites:", err);
       setError(err.message || "Failed to load favourites");
       setFavourites([]);
       
@@ -31,6 +39,11 @@ export const useFavourites = () => {
   };
 
   const toggleFavourite = async (productId) => {
+    if (!isAuthenticated) {
+      message.error("Please log in to add favourites");
+      return;
+    }
+
     try {
       const isLiked = favourites.some((like) => like.product_id === productId);
 
@@ -69,7 +82,7 @@ export const useFavourites = () => {
 
   useEffect(() => {
     loadFavourites();
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     favourites,

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { message } from "antd";
+import { toast } from "react-toastify";
 import { store } from "../app/store";
 import { logout } from "../features/auth/authSlice";
 
@@ -8,6 +8,14 @@ export const apiClient = axios.create({
 });
 
 let sessionExpiredNotified = false;
+
+const notifyError = (text) => {
+  toast.error(text, { autoClose: 2500 });
+};
+
+const notifyWarning = (text) => {
+  toast.warning(text, { autoClose: 2500 });
+};
 
 const clearAuthSession = () => {
   localStorage.removeItem("access_token");
@@ -43,7 +51,7 @@ apiClient.interceptors.request.use((config) => {
     clearAuthSession();
 
     if (!sessionExpiredNotified) {
-      message.warning("Session expired. Please login again.");
+      notifyWarning("Session expired. Please login again.");
       sessionExpiredNotified = true;
     }
 
@@ -67,17 +75,20 @@ apiClient.interceptors.response.use(
 
     if (status === 401) {
       clearAuthSession();
-      message.error("Session expired. Please login again.");
+      if (!sessionExpiredNotified) {
+        notifyError("Session expired. Please login again.");
+        sessionExpiredNotified = true;
+      }
       return Promise.reject(error);
     }
 
     if (Array.isArray(detail)) {
       // FastAPI validation errors
-      message.error(detail[0]?.msg || "Validation error");
+      notifyError(detail[0]?.msg || "Validation error");
     } else if (detail) {
-      message.error(detail);
+      notifyError(detail);
     } else {
-      message.error("Something went wrong. Please try again.");
+      notifyError("Something went wrong. Please try again.");
     }
 
     return Promise.reject(error);

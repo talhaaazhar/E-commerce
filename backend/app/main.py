@@ -13,7 +13,21 @@ from app.api.customer import reviews as customer_reviews
 from app.api.customer import like as customer_like
 from app.api.customer import profile as customer_profile
 from fastapi.staticfiles import StaticFiles
+
+
+
+from app.rag.pinecone_client import create_index
+
+from app.api.search import router as search_router
+from app.api.chatbot import router as chatbot_router
+
 app = FastAPI()
+
+@app.on_event("startup")
+def startup_event():
+    create_index()
+    print("pinecone index is ready!")
+
 
 # for images and media files
 app.mount("/media", StaticFiles(directory="media"), name="media")
@@ -47,3 +61,7 @@ app.include_router(admin_analytics.router)
 app.include_router(customer_reviews.router) 
 app.include_router(customer_like.router)
 app.include_router(customer_profile.router)
+
+
+app.include_router(search_router)
+app.include_router(chatbot_router)
